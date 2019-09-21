@@ -20,14 +20,14 @@
 				<span class="mdl-layout-title">OBS Scorer<span class="mdl-layout--large-screen-only"> Client</span></span>
 				<div class="mdl-layout-spacer"></div>
 				<nav class="mdl-navigation">
-					<a class="mdl-navigation__link" href="#"><i class="material-icons">power</i><span class="mdl-layout--large-screen-only">Log Out</span></a>
+					<a class="mdl-navigation__link" href="#"><i class="material-icons">power</i></a>
 				</nav>
 			</div>
 		</header>
 		<main class="mdl-layout__content">
 			<div class="page-content">
 				<div class="mdl-grid">
-					<div class="mdl-color--white mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col">
+					<div class="mdl-color--white mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mirasize">
 						<details><summary><div class="mdl-card__title">
 							<h2 class="mdl-card__title-text">Settings</h2>
 						</div></summary>
@@ -48,7 +48,7 @@
 							</div>
 							<!-- Scene and Source Name -->
 							<div>
-								
+
 							</div>
 						</div>
 					</div></details>
@@ -56,7 +56,7 @@
 			</div>
 		</main>
 	</div>
-	<dialog class="mdl-dialog" id="osc--login-dialog">
+	<dialog class="mdl-dialog" id="osc--login-dialog" style="transform: translate(-50%,-50%);top: 50%;left: 50%;right: unset;">
 		<h4 class="mdl-dialog__title">Log In!</h4>
 		<div class="mdl-dialog__content">
 			<div class="mdl-textfield mdl-js-textfield">
@@ -69,42 +69,90 @@
 			</div>
 		</div>
 		<div class="mdl-dialog__actions">
-			<button type="button" class="mdl-button" id="osc--login-dialog--login-button">Log In</button>
+			<button type="button" class="mdl-button close" id="osc--login-dialog--login-button">Log In</button>
 		</div>
 	</dialog>
 	<script>
-		const obs = new OBSWebSocket();
-		var dialog = document.querySelector('dialog');
-		var showDialogButton = document.querySelector('#osc--login-dialog--login-button');
-		var urlPort = document.querySelector('#osc--login-dialog--url');
-		var passport = document.querySelector('#osc--login-dialog--password');
-		if (!dialog.showModal) {
-			dialogPolyfill.registerDialog(dialog);
-		}
-		dialog.showModal();
-		urlPort.value = getSetting("urlPort") || "";
-		passport.value = getSetting("passport") || "";
-		showDialogButton.addEventListener('click', function () {
-			obs.connect({ address: urlPort.value, password: passport.value });
-			setSetting("urlPort",urlPort.value);
-			setSetting("passport",passport.value);
-		});
-		dialog.querySelector('.close').addEventListener('click', function () {
-			dialog.close();
-		});
-	</script>
-	<script>
 		function getSetting(opt) {
-			let loa = localStorage.getItem("osc--settings");
+			let loa = localStorage.getItem("osc--settings") || "{}";
 			let lob = JSON.parse(loa);
 			return lob[opt]
 		}
 		function setSetting(opt,val) {
-			let loa = localStorage.getItem("osc--settings") || {};
+			let loa = localStorage.getItem("osc--settings") || "{}";
 			let lob = JSON.parse(loa);
 			lob[opt] = val;
 			let loc = JSON.stringify(lob);
 			localStorage.setItem("osc--settings",lob);
 		}
+	</script>
+	<style>
+		.mdl-layout__container {z-index: 0}
+		.mirasize {
+			min-height: unset;
+		}
+		summary {
+			display: block
+		}
+		summary h2::after {
+			font-family: "Material Icons";
+			content: "expand_less";
+			font-size: 24px;
+		}
+		details[open] summary h2::after {
+			font-family: "Material Icons";
+			content: "expand_more";
+			font-size: 24px;
+		}
+	</style>
+	<script>
+		const obs = new OBSWebSocket();
+		var dialog = document.querySelector('dialog');
+		var showDialogButton = document.querySelector('#osc--login-dialog--login-button');
+		var settingsLogin = document.querySelector('#osc--settings--login-button');
+		var urlPort = document.querySelector('#osc--login-dialog--url');
+		var passport = document.querySelector('#osc--login-dialog--password');
+		var urlPort2 = document.querySelector('#osc--settings--url');
+		var passport2 = document.querySelector('#osc--settings--password');
+		//if (!dialog.showModal) {
+			dialogPolyfill.registerDialog(dialog);
+		//}
+		dialog.showModal();
+		urlPort.value = getSetting("urlPort") || "localhost:4444";
+		passport.value = getSetting("passport") || "";
+		urlPort2.value = getSetting("urlPort") || "localhost:4444";
+		passport2.value = getSetting("passport") || "";
+		showDialogButton.addEventListener('click', function () {
+			obs.connect({ address: urlPort.value, password: passport.value });
+			setSetting("urlPort",urlPort.value);
+			setSetting("passport",passport.value);
+		});
+		settingsLogin.addEventListener('click', function () {
+			obs.connect({ address: urlPort2.value, password: passport2.value });
+			setSetting("urlPort",urlPort2.value);
+			setSetting("passport",passport2.value);
+		});
+		dialog.querySelector('.close').addEventListener('click', function () {
+			dialog.close();
+		});
+	</script>
+	<!-- Snackbar -->
+	<div id="osc--snackbar" class="mdl-js-snackbar mdl-snackbar">
+		<div class="mdl-snackbar__text"></div>
+		<button class="mdl-snackbar__action" type="button"></button>
+	</div>
+	<script>
+		function showSnackbar(text) {
+			'use strict';
+			var snackbarContainer = document.querySelector('#osc--snackbar');
+			// showSnackbarButton.style.backgroundColor = '#' +
+			// 	Math.floor(Math.random() * 0xFFFFFF).toString(16);
+			var data = {
+				message: text,
+				timeout: 5000,
+				actionText: 'OK'
+			};
+			snackbarContainer.MaterialSnackbar.showSnackbar(data);
+		};
 	</script>
 </body>
