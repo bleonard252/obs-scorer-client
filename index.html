@@ -216,6 +216,9 @@
 		dialog.querySelector('.close').addEventListener('click', function () {
 			dialog.close();
 		});
+		obs.on('error', err => {
+			console.error('[obs] socket error:', err);
+		});
 	</script>
 	<script>
 		document.querySelector("#osc--settings--score1").value = getSetting("score1") || "";
