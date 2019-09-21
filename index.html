@@ -195,6 +195,71 @@
 											obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":x}})
 										})
 									});
+									document.querySelector("#osc--scoreboard--possession__team-0").addEventListener("blur",(e) => {
+										obs.send("SetSceneItemProperties",{"scene-name":getSetting("possession-scene").split(/,[ ]?/)[0],
+											"item": getSetting("possession1").split(/,[ ]?/)[0], "visible": false});
+										obs.send("SetSceneItemProperties",{"scene-name":getSetting("possession-scene").split(/,[ ]?/)[0],
+											"item": getSetting("possession2").split(/,[ ]?/)[0], "visible": false})
+									});
+									document.querySelector("#osc--scoreboard--possession__team-1").addEventListener("blur",(e) => {
+										obs.send("SetSceneItemProperties",{"scene-name":getSetting("possession-scene").split(/,[ ]?/)[0],
+											"item": getSetting("possession1").split(/,[ ]?/)[0], "visible": e.target.checked});
+											obs.send("SetSceneItemProperties",{"scene-name":getSetting("possession-scene").split(/,[ ]?/)[0],
+											"item": getSetting("possession2").split(/,[ ]?/)[0], "visible": false})
+									});
+									document.querySelector("#osc--scoreboard--possession__team-2").addEventListener("blur",(e) => {
+										obs.send("SetSceneItemProperties",{"scene-name":getSetting("possession-scene").split(/,[ ]?/)[0],
+											"item": getSetting("possession1").split(/,[ ]?/)[0], "visible": false});
+										obs.send("SetSceneItemProperties",{"scene-name":getSetting("possession-scene").split(/,[ ]?/)[0],
+											"item": getSetting("possession2").split(/,[ ]?/)[0], "visible": e.target.checked})
+									});
+								})
+							</script>
+						</div>
+					</div>
+					<div class="mdl-color--white mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col">
+						<div class="mdl-card__title">
+							<h2 class="mdl-card__title-text">Game Status</h2>
+						</div>
+						<div class="mdl-card__supporting-text">
+							<div id="osc--status--down">
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" id="osc--status--down__1">
+									1
+								</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon" id="osc--status--down__2">
+									2
+								</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon" id="osc--status--down__3">
+									3
+								</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon" id="osc--status--down__4">
+									4
+								</button>
+							</div>
+							<div>
+								& <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:48px">
+									<input class="mdl-textfield__input" type="text" pattern="[0-9]*(\.[0-9]+)?|GOAL|INCHES|LONG|MED|MEDIUM|SHORT" id="osc--status--yards">
+									<label class="mdl-textfield__label" for="osc--status--yards">Yards to Go</label>
+									<span class="mdl-textfield__error">Not valid!</span>
+								</div> yards
+							</div>
+							<script>
+								obs.on("AuthenticationSuccess",() => {
+									document.getElementById("osc-status--down").children.forEach((h) => { //toggles the four thingies
+										h.addEventListener("click", (f) => {
+											document.getElementById("osc-status--down").children.forEach((g) => g.className.replace(/[ ]?mdl-button--colored/,""));
+											f.target.className += " mdl-button--colored";
+										})
+									})
+									document.getElementById("osc--status--yards").addEventListener("blur", (e) => { //update the status thingy
+										let x1 = document.querySelector("#osc--status--down .mdl-button--colored").innerHTML;
+										x1 = x1.replace("1","1ST");
+										x1 = x1.replace("2","2ND");
+										x1 = x1.replace("3","3RD");
+										x1 = x1.replace("4","4TH");
+										let x2 = document.querySelector("#osc--status--yards").innerHTML;
+										getSetting("status-source").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":x1+" & "+x2}}));
+									})
 								})
 							</script>
 						</div>
