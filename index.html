@@ -230,14 +230,14 @@
 		document.querySelector("#osc--settings--status").value = getSetting("status-source") || "";
 		document.querySelector("#osc--settings--lineage").value = getSetting("lineage") || "";
 		// ---
-		document.querySelector("#osc--settings--score1").addEventListener("keypress",(e) => {setSetting("score1",e.target.val)});
-		document.querySelector("#osc--settings--score2").addEventListener("keypress",(e) => {setSetting("score2",e.target.val)});
-		document.querySelector("#osc--settings--timeouts1").addEventListener("keypress",(e) => {setSetting("timeouts1",e.target.val)});
-		document.querySelector("#osc--settings--timeouts2").addEventListener("keypress",(e) => {setSetting("timeouts2",e.target.val)});
-		document.querySelector("#osc--settings--image1").addEventListener("keypress",(e) => {setSetting("image1",e.target.val)});
-		document.querySelector("#osc--settings--image2").addEventListener("keypress",(e) => {setSetting("image2",e.target.val)});
-		document.querySelector("#osc--settings--status").addEventListener("keypress",(e) => {setSetting("status-source",e.target.val)});
-		document.querySelector("#osc--settings--lineage").addEventListener("keypress",(e) => {setSetting("lineage",e.target.val)});
+		document.querySelector("#osc--settings--score1").addEventListener("keypress",(e) => {setSetting("score1",e.target.value)});
+		document.querySelector("#osc--settings--score2").addEventListener("keypress",(e) => {setSetting("score2",e.target.value)});
+		document.querySelector("#osc--settings--timeouts1").addEventListener("keypress",(e) => {setSetting("timeouts1",e.target.value)});
+		document.querySelector("#osc--settings--timeouts2").addEventListener("keypress",(e) => {setSetting("timeouts2",e.target.value)});
+		document.querySelector("#osc--settings--image1").addEventListener("keypress",(e) => {setSetting("image1",e.target.value)});
+		document.querySelector("#osc--settings--image2").addEventListener("keypress",(e) => {setSetting("image2",e.target.value)});
+		document.querySelector("#osc--settings--status").addEventListener("keypress",(e) => {setSetting("status-source",e.target.value)});
+		document.querySelector("#osc--settings--lineage").addEventListener("keypress",(e) => {setSetting("lineage",e.target.value)});
 	</script>
 	<!-- Snackbar -->
 	<div id="osc--snackbar" class="mdl-js-snackbar mdl-snackbar">
