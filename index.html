@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+
+<head>
+	<!-- OBS WebSockets -->
+	<script src="https://rawcdn.githack.com/haganbmj/obs-websocket-js/be7810d7d36352df5a29fb996eec648bfaddfa3e/dist/obs-websocket.js"></script>
+	<!-- Material Design Lite -->
+	<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.green-blue.min.css" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+	<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+	<script src="https://rawcdn.githack.com/GoogleChrome/dialog-polyfill/9abb93c0cf35e96bb6372558398dfe741b69fa24/dist/dialog-polyfill.js"></script>
+	<link rel="stylesheet" href="https://rawcdn.githack.com/GoogleChrome/dialog-polyfill/9abb93c0cf35e96bb6372558398dfe741b69fa24/dist/dialog-polyfill.css" />
+	<!-- OBS Scorer Client -->
+	<title>OBS Scorer Client</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+	<dialog class="mdl-dialog" id="osc--login-dialog">
+		<h4 class="mdl-dialog__title">Log In!</h4>
+		<div class="mdl-dialog__content">
+			<div class="mdl-textfield mdl-js-textfield">
+				<input class="mdl-textfield__input" type="text" id="osc--login-dialog--url">
+				<label class="mdl-textfield__label" for="osc--login-dialog--url">URL and Port</label>
+			</div>
+			<div class="mdl-textfield mdl-js-textfield">
+				<input class="mdl-textfield__input" type="password" id="osc--login-dialog--password">
+				<label class="mdl-textfield__label" for="osc--login-dialog--password">Password (if applicable)</label>
+			</div>
+		</div>
+		<div class="mdl-dialog__actions">
+			<button type="button" class="mdl-button" id="osc--login-dialog--login-button">Log In</button>
+		</div>
+	</dialog>
+	<script>
+		var dialog = document.querySelector('dialog');
+		var showDialogButton = document.querySelector('#osc--login-dialog--login-button');
+		if (!dialog.showModal) {
+			dialogPolyfill.registerDialog(dialog);
+		}
+		dialog.showModal();
+		showDialogButton.addEventListener('click', function () {
+			
+		});
+		dialog.querySelector('.close').addEventListener('click', function () {
+			dialog.close();
+		});
+	</script>
+</body>
