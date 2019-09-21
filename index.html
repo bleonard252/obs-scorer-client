@@ -23,18 +23,18 @@
 		<main class="mdl-layout__content">
 			<div class="page-content">
 				<div class="mdl-grid">
-					<div class="mdl-color--white mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mirasize">
+					<div class="mdl-color--white mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col mirasize" id="osc--settings-card">
 						<details><summary><div class="mdl-card__title">
 							<h2 class="mdl-card__title-text">Settings</h2>
 						</div></summary>
 						<div class="mdl-card__supporting-text">
 							<!-- Registration-->
 							<div>
-								<div class="mdl-textfield mdl-js-textfield">
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 									<input class="mdl-textfield__input" type="text" id="osc--settings--url">
 									<label class="mdl-textfield__label" for="osc--settings--url">URL and Port</label>
 								</div>
-								<div class="mdl-textfield mdl-js-textfield">
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 									<input class="mdl-textfield__input" type="password" id="osc--settings--password">
 									<label class="mdl-textfield__label" for="osc--settings--password">Password (if applicable)</label>
 								</div>
@@ -45,17 +45,94 @@
 							<!-- Scene and Source Name -->
 							<div>
 								You can comma-separate these values. 
-								<div class="mdl-textfield mdl-js-textfield">
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 									<input class="mdl-textfield__input" type="text" id="osc--settings--score1">
 									<label class="mdl-textfield__label" for="osc--settings--score1">Away Team Score Source</label>
 								</div>
-								<div class="mdl-textfield mdl-js-textfield">
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 									<input class="mdl-textfield__input" type="text" id="osc--settings--score2">
 									<label class="mdl-textfield__label" for="osc--settings--score2">Home Team Score Source</label>
 								</div>
+								<!---->
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" title="Timeouts are output as dashes.">
+									<input class="mdl-textfield__input" type="text" id="osc--settings--timeouts1">
+									<label class="mdl-textfield__label" for="osc--settings--timeouts1">Away Team Timeout Dashes Source</label>
+								</div>
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" title="Timeouts are output as dashes.">
+									<input class="mdl-textfield__input" type="text" id="osc--settings--timeouts2">
+									<label class="mdl-textfield__label" for="osc--settings--timeouts2">Home Team Timeout Dashes Source</label>
+								</div>
+								<!---->
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+									<input class="mdl-textfield__input" type="text" id="osc--settings--image1">
+									<label class="mdl-textfield__label" for="osc--settings--image1">Away Team Icon Source</label>
+								</div>
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+									<input class="mdl-textfield__input" type="text" id="osc--settings--image2">
+									<label class="mdl-textfield__label" for="osc--settings--image2">Home Team Icon Source</label>
+								</div>
+								<!---->
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+									<input class="mdl-textfield__input" type="text" id="osc--settings--status">
+									<label class="mdl-textfield__label" for="osc--settings--status">Status/Downs Text Source</label>
+								</div>
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+									<input class="mdl-textfield__input" type="text" id="osc--settings--lineage">
+									<label class="mdl-textfield__label" for="osc--settings--lineage">Line of Possession Source</label>
+								</div>
 							</div>
+						</div></details>
+					</div>
+					<!-- --- -->
+					<div class="mdl-color--white mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col">
+						<div class="mdl-card__title">
+							<h2 class="mdl-card__title-text">Scoreboard</h2>
 						</div>
-					</div></details>
+						<div class="mdl-card__supporting-text">
+							<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+								<thead>
+									<tr>
+										<th class="mdl-data-table__cell--non-numeric">Icon</th>
+										<!-- <th class="mdl-data-table__cell--non-numeric">Name</th> -->
+										<th class="mdl-data-table__cell--non-numeric">Score</th>
+										<th class="mdl-data-table__cell--non-numeric">Timeouts</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td class="mdl-data-table__cell--non-numeric"><img id="osc--scoreboard--icon__team-1" /></td>
+										<td>
+											<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:24px">
+												<input class="mdl-textfield__input" type="text" pattern="-?[0-9]*(\.[0-9]+)?" id="osc--scoreboard--score__team-1">
+												<label class="mdl-textfield__label" for="osc--scoreboard--score__team-1">Pts</label>
+												<span class="mdl-textfield__error">NaN!</span>
+											</div>
+										</td>
+										<td><input class="mdl-slider mdl-js-slider" id="osc--scoreboard--timeouts__team-1" type="range" min="0" max="3" value="3" tabindex="0"></td>
+									</tr>
+									<tr>
+										<td class="mdl-data-table__cell--non-numeric"><img id="osc--scoreboard--icon__team-2" /></td>
+										<td>
+											<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:24px">
+												<input class="mdl-textfield__input" type="number" pattern="[0-9]*(\.[0-9]+)?" id="osc--scoreboard--score__team-2">
+												<label class="mdl-textfield__label" for="osc--scoreboard--score__team-2">Pts</label>
+												<span class="mdl-textfield__error">Invalid!</span>
+											</div>
+										</td>
+										<td><input class="mdl-slider mdl-js-slider" id="osc--scoreboard--timeouts__team-1" type="range" min="0" max="3" value="3" tabindex="0"></td>
+									</tr>
+								</tbody>
+							</table>
+							<script>
+								obs.on("ConnectionOpened",() => {
+									obs.send("GetSourceSettings",{"sourceName": getSetting("score1")}).then((data) => {document.querySelector("#osc--scoreboard--score__team-1").value = data.sourceSettings.text});
+									obs.send("GetSourceSettings",{"sourceName": getSetting("score2")}).then((data) => {document.querySelector("#osc--scoreboard--score__team-2").value = data.sourceSettings.text});
+									obs.send("GetSourceSettings",{"sourceName": getSetting("timeouts1")}).then((data) => {document.querySelector("#osc--scoreboard--timeouts__team-1").value = data.sourceSettings.text});
+									document.querySelector("#osc--scoreboard--score__team-1").addEventListener("blur",(e) => {obs.send("SetSourceSettings",{"sourceName":getSetting("score1"),"sourceSettings": {"text":e.target.value}})});
+								})
+							</script>
+						</div>
+					</div>
 				</div>
 			</div>
 		</main>
@@ -63,11 +140,11 @@
 	<dialog class="mdl-dialog" id="osc--login-dialog" style="transform: translate(-50%,-50%);top: 50%;left: 50%;right: unset;">
 		<h4 class="mdl-dialog__title">Log In!</h4>
 		<div class="mdl-dialog__content">
-			<div class="mdl-textfield mdl-js-textfield">
+			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 				<input class="mdl-textfield__input" type="text" id="osc--login-dialog--url">
 				<label class="mdl-textfield__label" for="osc--login-dialog--url">URL and Port</label>
 			</div>
-			<div class="mdl-textfield mdl-js-textfield">
+			<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 				<input class="mdl-textfield__input" type="password" id="osc--login-dialog--password">
 				<label class="mdl-textfield__label" for="osc--login-dialog--password">Password (if applicable)</label>
 			</div>
@@ -139,6 +216,25 @@
 		dialog.querySelector('.close').addEventListener('click', function () {
 			dialog.close();
 		});
+	</script>
+	<script>
+		document.querySelector("#osc--settings--score1").value = getSetting("score1") || "";
+		document.querySelector("#osc--settings--score2").value = getSetting("score2") || "";
+		document.querySelector("#osc--settings--timeouts1").value = getSetting("timeouts1") || "";
+		document.querySelector("#osc--settings--timeouts2").value = getSetting("timeouts2") || "";
+		document.querySelector("#osc--settings--image1").value = getSetting("image1") || "";
+		document.querySelector("#osc--settings--image2").value = getSetting("image2") || "";
+		document.querySelector("#osc--settings--status").value = getSetting("status-source") || "";
+		document.querySelector("#osc--settings--lineage").value = getSetting("lineage") || "";
+		// ---
+		document.querySelector("#osc--settings--score1").addEventListener("keypress",(e) => {setSetting("score1",e.target.val)});
+		document.querySelector("#osc--settings--score2").addEventListener("keypress",(e) => {setSetting("score2",e.target.val)});
+		document.querySelector("#osc--settings--timeouts1").addEventListener("keypress",(e) => {setSetting("timeouts1",e.target.val)});
+		document.querySelector("#osc--settings--timeouts2").addEventListener("keypress",(e) => {setSetting("timeouts2",e.target.val)});
+		document.querySelector("#osc--settings--image1").addEventListener("keypress",(e) => {setSetting("image1",e.target.val)});
+		document.querySelector("#osc--settings--image2").addEventListener("keypress",(e) => {setSetting("image2",e.target.val)});
+		document.querySelector("#osc--settings--status").addEventListener("keypress",(e) => {setSetting("status-source",e.target.val)});
+		document.querySelector("#osc--settings--lineage").addEventListener("keypress",(e) => {setSetting("lineage",e.target.val)});
 	</script>
 	<!-- Snackbar -->
 	<div id="osc--snackbar" class="mdl-js-snackbar mdl-snackbar">
