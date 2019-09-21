@@ -14,6 +14,31 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
+	<div class="mdl-layout mdl-js-layout mdl-layout--no-drawer mdl-layout--fixed-header">
+		<header class="mdl-layout__header">
+			<div class="mdl-layout__header-row">
+				<span class="mdl-layout-title">OBS Scorer<span class="mdl-layout--large-screen-only"> Client</span></span>
+				<div class="mdl-layout-spacer"></div>
+				<nav class="mdl-navigation">
+					<a class="mdl-navigation__link" href="#"><i class="material-icons">power</i><span class="mdl-layout--large-screen-only">Log Out</span></a>
+				</nav>
+			</div>
+		</header>
+		<main class="mdl-layout__content">
+			<div class="page-content">
+				<div class="mdl-grid">
+					<div class="mdl-color--white mdl-card mdl-shadow--2dp mdl-cell mdl-cell--12-col">
+						<details><summary><div class="mdl-card__title">
+							<h2 class="mdl-card__title-text">Settings</h2>
+						</div></summary>
+						<div class="mdl-card__supporting-text">
+							
+						</div>
+					</div></details>
+				</div>
+			</div>
+		</main>
+	</div>
 	<dialog class="mdl-dialog" id="osc--login-dialog">
 		<h4 class="mdl-dialog__title">Log In!</h4>
 		<div class="mdl-dialog__content">
@@ -40,11 +65,29 @@
 			dialogPolyfill.registerDialog(dialog);
 		}
 		dialog.showModal();
+		urlPort.value = getSetting("urlPort") || "";
+		passport.value = getSetting("passport") || "";
 		showDialogButton.addEventListener('click', function () {
 			obs.connect({ address: urlPort.value, password: passport.value });
+			setSetting("urlPort",urlPort.value);
+			setSetting("passport",passport.value);
 		});
 		dialog.querySelector('.close').addEventListener('click', function () {
 			dialog.close();
 		});
+	</script>
+	<script>
+		function getSetting(opt) {
+			let loa = localStorage.getItem("osc--settings");
+			let lob = JSON.parse(loa);
+			return lob[opt]
+		}
+		function setSetting(opt,val) {
+			let loa = localStorage.getItem("osc--settings") || {};
+			let lob = JSON.parse(loa);
+			lob[opt] = val;
+			let loc = JSON.stringify(lob);
+			localStorage.setItem("osc--settings",lob);
+		}
 	</script>
 </body>
