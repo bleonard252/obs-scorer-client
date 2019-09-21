@@ -97,6 +97,11 @@
 										<!-- <th class="mdl-data-table__cell--non-numeric">Name</th> -->
 										<th class="mdl-data-table__cell--non-numeric">Score</th>
 										<th class="mdl-data-table__cell--non-numeric">Timeouts</th>
+										<th class="mdl-data-table__cell--non-numeric">
+											<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="osc--scoreboard--possession__team-0">
+												<input type="radio" id="osc--scoreboard--possession__team-0" class="mdl-radio__button" value="1" checked>
+											</label>
+										</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -110,6 +115,11 @@
 											</div>
 										</td>
 										<td><input class="mdl-slider mdl-js-slider" id="osc--scoreboard--timeouts__team-1" type="range" min="0" max="3" value="3" tabindex="0"></td>
+										<td>
+											<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="osc--scoreboard--possession__team-1">
+												<input type="radio" id="osc--scoreboard--possession__team-1" class="mdl-radio__button" value="0">
+											</label>
+										</td>
 									</tr>
 									<tr>
 										<td class="mdl-data-table__cell--non-numeric"><img id="osc--scoreboard--icon__team-2" /></td>
@@ -121,6 +131,11 @@
 											</div>
 										</td>
 										<td><input class="mdl-slider mdl-js-slider" id="osc--scoreboard--timeouts__team-2" type="range" min="0" max="3" value="3" tabindex="0"></td>
+										<td>
+											<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="osc--scoreboard--possession__team-2">
+												<input type="radio" id="osc--scoreboard--possession__team-2" class="mdl-radio__button" value="0">
+											</label>
+										</td>
 									</tr>
 								</tbody>
 							</table>
@@ -142,7 +157,7 @@
 											if (e.target.value == 1) x = "-";
 											else if (e.target.value == 2) x = "- -";
 											else if (e.target.value == 3) x = "- - -";
-											else x = "";
+											else x = " ";
 											obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":x}})
 										})
 									});
@@ -152,7 +167,7 @@
 											if (e.target.value == 1) x = "-";
 											else if (e.target.value == 2) x = "- -";
 											else if (e.target.value == 3) x = "- - -";
-											else x = "";
+											else x = " ";
 											obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":x}})
 										})
 									});
