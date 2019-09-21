@@ -12,6 +12,7 @@
 	<!-- OBS Scorer Client -->
 	<title>OBS Scorer Client</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script>const obs = new OBSWebSocket();</script>
 </head>
 <body>
 	<div class="mdl-layout mdl-js-layout mdl-layout--no-drawer mdl-layout--fixed-header">
@@ -187,7 +188,6 @@
 		}
 	</style>
 	<script>
-		const obs = new OBSWebSocket();
 		var dialog = document.querySelector('dialog');
 		var showDialogButton = document.querySelector('#osc--login-dialog--login-button');
 		var settingsLogin = document.querySelector('#osc--settings--login-button');
