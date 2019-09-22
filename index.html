@@ -78,6 +78,10 @@
 									<label class="mdl-textfield__label" for="osc--settings--status">Status/Downs Text Source</label>
 								</div>
 								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+									<input class="mdl-textfield__input" type="text" id="osc--settings--idle">
+									<label class="mdl-textfield__label" for="osc--settings--idle">Idle Status Text</label>
+								</div>
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 									<input class="mdl-textfield__input" type="text" id="osc--settings--lineage">
 									<label class="mdl-textfield__label" for="osc--settings--lineage">Line of Possession Source</label>
 								</div>
@@ -223,18 +227,11 @@
 						</div>
 						<div class="mdl-card__supporting-text">
 							<div id="osc--status--down">
-								<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" id="osc--status--down__1">
-									1
-								</button>
-								<button class="mdl-button mdl-js-button mdl-button--icon" id="osc--status--down__2">
-									2
-								</button>
-								<button class="mdl-button mdl-js-button mdl-button--icon" id="osc--status--down__3">
-									3
-								</button>
-								<button class="mdl-button mdl-js-button mdl-button--icon" id="osc--status--down__4">
-									4
-								</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" id="osc--status--down__1">1</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon" id="osc--status--down__2">2</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon" id="osc--status--down__3">3</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon" id="osc--status--down__4">4</button>
+								Down
 							</div>
 							<div>
 								& <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:48px">
@@ -242,26 +239,44 @@
 									<label class="mdl-textfield__label" for="osc--status--yards">Yards to Go</label>
 									<span class="mdl-textfield__error">Not valid!</span>
 								</div> yards
+								<button class="mdl-button mdl-js-button" id="osc--status--update">SEND</button>
 							</div>
 							<script>
+								var specialStatus = () => {};
+								var firstn10 = () => {};
 								obs.on("AuthenticationSuccess",() => {
-									document.getElementById("osc-status--down").children.forEach((h) => { //toggles the four thingies
+									document.querySelectorAll("#osc--status--down>*").forEach((h) => { //toggles the four thingies
 										h.addEventListener("click", (f) => {
-											document.getElementById("osc-status--down").children.forEach((g) => g.className.replace(/[ ]?mdl-button--colored/,""));
+											document.querySelectorAll("#osc--status--down>*").forEach((g) => g.classList.remove("mdl-button--colored"));
 											f.target.className += " mdl-button--colored";
 										})
 									})
-									document.getElementById("osc--status--yards").addEventListener("blur", (e) => { //update the status thingy
+									function lx(e) { //update the status thingy
 										let x1 = document.querySelector("#osc--status--down .mdl-button--colored").innerHTML;
 										x1 = x1.replace("1","1ST");
 										x1 = x1.replace("2","2ND");
 										x1 = x1.replace("3","3RD");
 										x1 = x1.replace("4","4TH");
-										let x2 = document.querySelector("#osc--status--yards").innerHTML;
+										let x2 = document.querySelector("#osc--status--yards").value;
 										getSetting("status-source").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":x1+" & "+x2}}));
-									})
+									}
+									document.getElementById("osc--status--yards").addEventListener("blur", lx);
+									document.getElementById("osc--status--update").addEventListener("click", lx);
+									specialStatus = (text) => getSetting("status-source").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":text}}));
+									firstn10 = () => {document.querySelectorAll("#osc--status--down>*").forEach((g) => g.classList.remove("mdl-button--colored"));document.querySelector("#osc--status--down>*").classList.add("mdl-button--colored")}
 								})
 							</script>
+							<div>
+								<button class="mdl-button mdl-js-button mdl-button--colored" id="osc--status--idle"
+									onclick="specialStatus(getSetting('idle').toUpperCase())">BASIC</button>
+								<button class="mdl-button mdl-js-button mdl-button--colored" id="osc--status--reset"
+									onclick="specialStatus('1ST & 10');firstn10()">RESET</button>
+								<br />
+								<button class="mdl-button mdl-js-button mdl-color-text--amber" id="osc--status--flag"
+									onclick="specialStatus('FLAG')">FLAG</button>
+								<button class="mdl-button mdl-js-button mdl-color-text--amber" id="osc--status--review"
+									onclick="specialStatus('REVIEW')">REVIEW</button>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -288,7 +303,7 @@
 		function getSetting(opt) {
 			let loa = localStorage.getItem("osc--settings") || "{}";
 			let lob = JSON.parse(loa);
-			return lob[opt]
+			return lob[opt] || ""
 		}
 		function setSetting(opt,val) {
 			let loa = localStorage.getItem("osc--settings") || "{}";
@@ -358,6 +373,7 @@
 		document.querySelector("#osc--settings--image1").value = getSetting("image1") || "";
 		document.querySelector("#osc--settings--image2").value = getSetting("image2") || "";
 		document.querySelector("#osc--settings--status").value = getSetting("status-source") || "";
+		document.querySelector("#osc--settings--idle").value = getSetting("idle") || "";
 		document.querySelector("#osc--settings--lineage").value = getSetting("lineage") || "";
 		document.querySelector("#osc--settings--possession-scene").value = getSetting("possession-scene") || "";
 		document.querySelector("#osc--settings--possession1").value = getSetting("possession1") || "";
@@ -370,6 +386,7 @@
 		document.querySelector("#osc--settings--image1").addEventListener("blur",(e) => {setSetting("image1",e.target.value)});
 		document.querySelector("#osc--settings--image2").addEventListener("blur",(e) => {setSetting("image2",e.target.value)});
 		document.querySelector("#osc--settings--status").addEventListener("blur",(e) => {setSetting("status-source",e.target.value)});
+		document.querySelector("#osc--settings--idle").addEventListener("blur",(e) => {setSetting("idle",e.target.value)});
 		document.querySelector("#osc--settings--lineage").addEventListener("blur",(e) => {setSetting("lineage",e.target.value)});
 		document.querySelector("#osc--settings--possession1").addEventListener("blur",(e) => {setSetting("possession1",e.target.value)});
 		document.querySelector("#osc--settings--possession2").addEventListener("blur",(e) => {setSetting("possession2",e.target.value)});
