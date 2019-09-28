@@ -244,7 +244,7 @@
 							</div>
 							<div>
 								& <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:48px">
-									<input class="mdl-textfield__input" type="text" pattern="[0-9]*(\.[0-9]+)?|GOAL|INCHES|LONG|MED|MEDIUM|SHORT" id="osc--status--yards">
+									<input class="mdl-textfield__input" type="text" pattern="[0-9]*(\.[0-9]+)?|GOAL|INCHES|IN|LONG|MED|MEDIUM|SHORT" id="osc--status--yards">
 									<label class="mdl-textfield__label" for="osc--status--yards">Yards to Go</label>
 									<span class="mdl-textfield__error">Not valid!</span>
 								</div> yards
@@ -272,7 +272,8 @@
 									document.getElementById("osc--status--yards").addEventListener("blur", lx);
 									document.getElementById("osc--status--update").addEventListener("click", lx);
 									specialStatus = (text) => getSetting("status-source").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":text}}));
-									firstn10 = () => {document.querySelectorAll("#osc--status--down>*").forEach((g) => g.classList.remove("mdl-button--colored"));document.querySelector("#osc--status--down>*").classList.add("mdl-button--colored")}
+									firstn10 = () => {document.querySelectorAll("#osc--status--down>*").forEach((g) => g.classList.remove("mdl-button--colored"));document.querySelector("#osc--status--down>*").classList.add("mdl-button--colored");
+										document.querySelectorAll("#osc--status--yards").value = "10";}
 								})
 							</script>
 							<div>
