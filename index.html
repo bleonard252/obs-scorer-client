@@ -41,10 +41,15 @@
 								</div>
 								<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="osc--settings--login-button">
 									Sign In
-								</button>
+								</button><br />
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+									<input class="mdl-textfield__input" type="text" id="osc--settings--settings-holder">
+									<label class="mdl-textfield__label" for="osc--settings--settings-holder">Settings Synchronization Source</label>
+								</div>
 							</div>
 							<!-- Scene and Source Name -->
 							<div>
+								<!-- //# Setting Fields -->
 								You can comma-separate these values. 
 								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 									<input class="mdl-textfield__input" type="text" id="osc--settings--score1">
@@ -111,6 +116,21 @@
 									<input class="mdl-textfield__input" type="text" id="osc--settings--review">
 									<label class="mdl-textfield__label" for="osc--settings--review">Review Source</label>
 								</div>
+								<!---->
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+									<input class="mdl-textfield__input" type="text" id="osc--settings--quarter">
+									<label class="mdl-textfield__label" for="osc--settings--quarter">Quarter Source</label>
+								</div>
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+									<input class="mdl-textfield__input" type="text" id="osc--settings--quarter">
+									<label class="mdl-textfield__label" for="osc--settings--clock">Game Clock Source</label>
+								</div>
+							</div>
+							<div class="mdl-dialog__actions">
+								<button type="button" class="mdl-button mdl-js-button mdl-button--colored" id="osc--settings--sync-button"
+									onClick="pushSettings()">Sync (Push)</button>
+								<button type="button" class="mdl-button mdl-js-button mdl-button--colored" id="osc--settings--pull-button"
+									onClick="pullSettings()">Sync (Pull)</button>
 							</div>
 						</div></details>
 					</div>
@@ -145,7 +165,7 @@
 													<span class="mdl-textfield__error">Invalid!</span>
 												</div>
 											</td>
-											<td><input class="mdl-slider mdl-js-slider" id="osc--scoreboard--timeouts__team-1" style="padding:0;margin:0;min-width:98px" type="range" min="0" max="3" value="3" tabindex="0"></td>
+											<td style="min-width:98px"><input class="mdl-slider mdl-js-slider" id="osc--scoreboard--timeouts__team-1" type="range" min="0" max="3" value="3" tabindex="0"></td>
 											<td>
 												<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="osc--scoreboard--possession__team-1">
 													<input type="radio" name="osc--scoreboard--possession" class="mdl-radio__button" id="osc--scoreboard--possession__team-1" value="1">
@@ -161,7 +181,7 @@
 													<span class="mdl-textfield__error">Invalid!</span>
 												</div>
 											</td>
-											<td><input class="mdl-slider mdl-js-slider" id="osc--scoreboard--timeouts__team-2" style="padding:0;margin:0;min-width:98px" type="range" min="0" max="3" value="3" tabindex="0"></td>
+											<td style="min-width:98px"><input class="mdl-slider mdl-js-slider" id="osc--scoreboard--timeouts__team-2" type="range" min="0" max="3" value="3" tabindex="0"></td>
 											<td>
 												<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="osc--scoreboard--possession__team-2">
 													<input type="radio" name="osc--scoreboard--possession" class="mdl-radio__button" id="osc--scoreboard--possession__team-2" value="2">
@@ -177,6 +197,9 @@
 									obs.send("GetSourceSettings",{"sourceName": getSetting("score2").split(/,[ ]?/)[0]}).then((data) => {document.querySelector("#osc--scoreboard--score__team-2").value = data.sourceSettings.text});
 									obs.send("GetSourceSettings",{"sourceName": getSetting("timeouts1").split(/,[ ]?/)[0]}).then((data) => {document.querySelector("#osc--scoreboard--timeouts__team-1").MaterialSlider.change(data.sourceSettings.text.match(/-/g) || [].length)});
 									obs.send("GetSourceSettings",{"sourceName": getSetting("timeouts2").split(/,[ ]?/)[0]}).then((data) => {document.querySelector("#osc--scoreboard--timeouts__team-2").MaterialSlider.change(data.sourceSettings.text.match(/-/g) || [].length)});
+									obs.send("GetSourceSettings",{"sourceName": getSetting("quarter").split(/,[ ]?/)[0]}).then((data) => {
+										document.querySelectorAll("#osc--clock--qtr>*").forEach((g) => g.classList.remove("mdl-button--colored")); 
+										document.querySelector("#osc--clock--qtr__"+data.sourceSettings.text.replace(/ST|ND|RD|TH/,"").replace("OT","ot")).classList.add("mdl-button--colored")});
 									obs.send("GetSceneItemProperties",
 										{"scene-name": getSetting("possession-scene").split(/,[ ]?/)[0], 
 										"item": getSetting("possession1").split(/,[ ]?/)[0]}).then((data) => 
@@ -316,10 +339,36 @@
 					</div>
 					<div class="mdl-color--white mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col">
 						<div class="mdl-card__title">
-							<h2 class="mdl-card__title-text"></h2>
+							<h2 class="mdl-card__title-text">Clock</h2>
 						</div>
 						<div class="mdl-card__supporting-text">
+							<div id="osc--clock--qtr">
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored" id="osc--clock--qtr__1">1</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon" id="osc--clock--qtr__2">2</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon" id="osc--clock--qtr__3">3</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon" id="osc--clock--qtr__4">4</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon" id="osc--clock--qtr__OT">OT</button>
+								Qtr
+							</div>
 						</div>
+						<script>
+							document.querySelectorAll("#osc--clock--qtr>*").forEach((h) => { //toggles the five thingies
+								h.addEventListener("click", (f) => {
+									document.querySelectorAll("#osc--clock--qtr>*").forEach((g) => g.classList.remove("mdl-button--colored"));
+									f.target.className += " mdl-button--colored";
+								})
+							})
+							function lx2(e) { //update the quarter
+								let x1 = document.querySelector("#osc--clock--qtr .mdl-button--colored").innerHTML;
+								x1 = x1.replace("1","1ST");
+								x1 = x1.replace("2","2ND");
+								x1 = x1.replace("3","3RD");
+								x1 = x1.replace("4","4TH");
+								//getSetting("status-source").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":x1+" & "+x2}}));
+								getSetting("quarter").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":x1}}).catch((e) => console.error("[lx2] update failed", e)));
+							}
+							document.querySelectorAll("#osc--clock--qtr>button").forEach((i) => i.addEventListener("click", lx2));
+						</script>
 					</div>
 				</div>
 			</div>
@@ -343,19 +392,21 @@
 	</dialog>
 	<script>
 		function getSetting(opt) {
-			if (opt == "urlPort" || opt == "passport") return localStorage.getItem("osc--"+opt);
+			if (opt == "urlPort" || opt == "passport" || opt == "settingHolder") return localStorage.getItem("osc--"+opt);
 			let loa = localStorage.getItem("osc--settings") || "{}";
 			let lob = JSON.parse(loa);
 			return lob[opt] || ""
 		}
 		function setSetting(opt,val) {
-			if (opt == "urlPort" || opt == "passport") return localStorage.setItem("osc--"+opt,val);
+			if (opt == "urlPort" || opt == "passport" || opt == "settingHolder") return localStorage.setItem("osc--"+opt,val);
 			let loa = localStorage.getItem("osc--settings") || "{}";
 			let lob = JSON.parse(loa);
 			lob[opt] = val;
 			let loc = JSON.stringify(lob);
 			return localStorage.setItem("osc--settings",loc);
 		}
+		function pushSettings() {if (localStorage.getItem("osc--settingHolder").length) try {obs.send("SetSourceSettings",{"sourceName": localStorage.getItem("osc--settingHolder"),"sourceSettings": {"text":localStorage.getItem("osc--settings")}}).catch((e) => console.warn("[pushSettings] push settings failed", e))} catch(e) {console.warn("[pushSettings] push settings failed", e)} else console.log("[pushSettings] Nowhere to sync, not syncing.")}
+		function pullSettings() {try {obs.send("GetSourceSettings",{"sourceName": localStorage.getItem("osc--settingHolder")}).then((data) => {localStorage.setItem("osc--settings",data.sourceSettings.text)}).catch((e) => console.warn("[pullSettings] pull settings failed", e));} catch(e) {console.warn("[pullSettings] pull settings failed", e)}}
 	</script>
 	<style>
 		.mdl-layout__container {z-index: 0}
@@ -396,11 +447,13 @@
 			obs.connect({ address: urlPort.value, password: passport.value });
 			setSetting("urlPort",urlPort.value);
 			setSetting("passport",passport.value);
+			//try {obs.send("GetSourceSettings",{"sourceName": localStorage.getItem("osc--settingHolder")}).then((data) => {localStorage.setItem("osc--settingHolder",data.sourceSettings.text)});} catch(e) {console.warn("[login/dialog] pull settings failed", e)}
 		});
 		settingsLogin.addEventListener('click', function () {
 			obs.connect({ address: urlPort2.value, password: passport2.value });
 			setSetting("urlPort",urlPort2.value);
 			setSetting("passport",passport2.value);
+			//try {obs.send("GetSourceSettings",{"sourceName": localStorage.getItem("osc--settingHolder")}).then((data) => {localStorage.setItem("osc--settingHolder",data.sourceSettings.text)});} catch(e) {console.warn("[login/settings] pull settings failed", e)}
 		});
 		dialog.querySelector('.close').addEventListener('click', function () {
 			dialog.close();
@@ -410,6 +463,8 @@
 		});
 	</script>
 	<script>
+		//# Setting Field Scripts
+		document.querySelector("#osc--settings--settings-holder").value = localStorage.getItem("osc--settingHolder") || "";
 		document.querySelector("#osc--settings--score1").value = getSetting("score1") || "";
 		document.querySelector("#osc--settings--score2").value = getSetting("score2") || "";
 		document.querySelector("#osc--settings--timeouts1").value = getSetting("timeouts1") || "";
@@ -425,7 +480,10 @@
 		document.querySelector("#osc--settings--flag-review-scene").value = getSetting("flag-review-scene") || "";
 		document.querySelector("#osc--settings--flag").value = getSetting("flag") || "";
 		document.querySelector("#osc--settings--review").value = getSetting("review") || "";
+		document.querySelector("#osc--settings--quarter").value = getSetting("quarter") || "";
+		//document.querySelector("#osc--settings--clock").value = getSetting("clock-source") || "";
 		// ---
+		document.querySelector("#osc--settings--settings-holder").addEventListener("blur",(e) => {localStorage.setItem("osc--settingHolder",e.target.value)});
 		document.querySelector("#osc--settings--score1").addEventListener("blur",(e) => {setSetting("score1",e.target.value)});
 		document.querySelector("#osc--settings--score2").addEventListener("blur",(e) => {setSetting("score2",e.target.value)});
 		document.querySelector("#osc--settings--timeouts1").addEventListener("blur",(e) => {setSetting("timeouts1",e.target.value)});
@@ -441,6 +499,8 @@
 		document.querySelector("#osc--settings--flag-review-scene").addEventListener("blur",(e) => {setSetting("flag-review-scene",e.target.value)});
 		document.querySelector("#osc--settings--flag").addEventListener("blur",(e) => {setSetting("flag",e.target.value)});
 		document.querySelector("#osc--settings--review").addEventListener("blur",(e) => {setSetting("review",e.target.value)});
+		document.querySelector("#osc--settings--quarter").addEventListener("blur",(e) => {setSetting("quarter",e.target.value)});
+		//document.querySelector("#osc--settings--clock").addEventListener("blur",(e) => {setSetting("clock-source",e.target.value)});
 	</script>
 	<!-- Snackbar -->
 	<div id="osc--snackbar" class="mdl-js-snackbar mdl-snackbar">
