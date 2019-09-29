@@ -302,9 +302,9 @@
 							</script>
 							<div>
 								<button class="mdl-button mdl-js-button mdl-button--colored" id="osc--status--idle"
-									onclick="specialStatus(getSetting('idle').toUpperCase())">BASIC</button>
+									onclick="specialStatus(getSetting('idle').toUpperCase());clearStatus();">BASIC</button>
 								<button class="mdl-button mdl-js-button mdl-button--colored" id="osc--status--reset"
-									onclick="specialStatus('1ST & 10');firstn10()">RESET</button>
+									onclick="specialStatus('1ST & 10');firstn10();clearStatus();">RESET</button>
 								<br />
 								<button class="mdl-button mdl-js-button mdl-color-text--amber" id="osc--status--flag"
 									onclick="specialStatus('FLAG')">FLAG</button>
