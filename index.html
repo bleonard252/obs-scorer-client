@@ -286,14 +286,14 @@
 										x1 = x1.replace("4","4TH");
 										let x2 = document.querySelector("#osc--status--yards").value;
 										getSetting("status-source").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":x1+" & "+x2}}));
-									}
-									document.getElementById("osc--status--yards").addEventListener("blur", lx);
-									document.getElementById("osc--status--update").addEventListener("click", lx);
-									specialStatus = (text) => {getSetting("status-source").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":text}}));
 										obs.send("SetSceneItemProperties",{"scene-name":getSetting("flag-review-scene").split(/,[ ]?/)[0],
 											"item": getSetting("flag").split(/,[ ]?/)[0], "visible": false});
 										obs.send("SetSceneItemProperties",{"scene-name":getSetting("flag-review-scene").split(/,[ ]?/)[0],
-											"item": getSetting("review").split(/,[ ]?/)[0], "visible": false});}
+											"item": getSetting("review").split(/,[ ]?/)[0], "visible": false});
+									}
+									document.getElementById("osc--status--yards").addEventListener("blur", lx);
+									document.getElementById("osc--status--update").addEventListener("click", lx);
+									specialStatus = (text) => getSetting("status-source").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":text}}));
 									firstn10 = () => {document.querySelectorAll("#osc--status--down>*").forEach((g) => g.classList.remove("mdl-button--colored"));document.querySelector("#osc--status--down>*").classList.add("mdl-button--colored");
 										document.querySelector("#osc--status--yards").value = "10";}
 								})
