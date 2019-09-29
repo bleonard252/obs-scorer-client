@@ -232,9 +232,15 @@
 									});
 									document.querySelector("#osc--status--flag").addEventListener("blur",(e) => {
 										obs.send("SetSceneItemProperties",{"scene-name":getSetting("flag-review-scene").split(/,[ ]?/)[0],
-											"item": getSetting("flag").split(/,[ ]?/)[0], "visible": false});
+											"item": getSetting("flag").split(/,[ ]?/)[0], "visible": true});
 									});
 									document.querySelector("#osc--status--review").addEventListener("blur",(e) => {
+										obs.send("SetSceneItemProperties",{"scene-name":getSetting("flag-review-scene").split(/,[ ]?/)[0],
+											"item": getSetting("review").split(/,[ ]?/)[0], "visible": true});
+									});
+									document.querySelector("#osc--status--clear").addEventListener("blur",(e) => {
+										obs.send("SetSceneItemProperties",{"scene-name":getSetting("flag-review-scene").split(/,[ ]?/)[0],
+											"item": getSetting("flag").split(/,[ ]?/)[0], "visible": false});
 										obs.send("SetSceneItemProperties",{"scene-name":getSetting("flag-review-scene").split(/,[ ]?/)[0],
 											"item": getSetting("review").split(/,[ ]?/)[0], "visible": false});
 									});
@@ -298,6 +304,7 @@
 									onclick="specialStatus('FLAG')">FLAG</button>
 								<button class="mdl-button mdl-js-button mdl-color-text--amber" id="osc--status--review"
 									onclick="specialStatus('REVIEW')">REVIEW</button>
+								<button class="mdl-button mdl-js-button" id="osc--status--clear">CLEAR</button>
 							</div>
 						</div>
 					</div>
