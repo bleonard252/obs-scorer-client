@@ -122,7 +122,7 @@
 									<label class="mdl-textfield__label" for="osc--settings--quarter">Quarter Source</label>
 								</div>
 								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--quarter">
+									<input class="mdl-textfield__input" type="text" id="osc--settings--clock">
 									<label class="mdl-textfield__label" for="osc--settings--clock">Game Clock Source</label>
 								</div>
 							</div>
@@ -200,6 +200,7 @@
 									obs.send("GetSourceSettings",{"sourceName": getSetting("quarter").split(/,[ ]?/)[0]}).then((data) => {
 										document.querySelectorAll("#osc--clock--qtr>*").forEach((g) => g.classList.remove("mdl-button--colored")); 
 										document.querySelector("#osc--clock--qtr__"+data.sourceSettings.text.replace(/ST|ND|RD|TH/,"").replace("OT","ot")).classList.add("mdl-button--colored")});
+									obs.send("GetSourceSettings",{"sourceName": getSetting("clock-source").split(/,[ ]?/)[0]}).then((data) => {document.querySelector("#osc--clock--time").value = data.sourceSettings.text});
 									obs.send("GetSceneItemProperties",
 										{"scene-name": getSetting("possession-scene").split(/,[ ]?/)[0], 
 										"item": getSetting("possession1").split(/,[ ]?/)[0]}).then((data) => 
@@ -265,6 +266,9 @@
 									});
 									document.querySelector("#osc--status--clear").addEventListener("blur",(e) => {
 										clearStatus();
+									});
+									document.querySelector("#osc--clock--time").addEventListener("blur",(e) => {
+										getSetting("clock-source").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":e.target.value}}).catch((e) => console.warn("[clock updater hook] failure to update clock", e)))
 									});
 								})
 							</script>
@@ -350,8 +354,18 @@
 								<button class="mdl-button mdl-js-button mdl-button--icon" id="osc--clock--qtr__OT">OT</button>
 								Qtr
 							</div>
+							<div>
+								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:192px">
+									<input class="mdl-textfield__input" type="text" pattern="[0-9][0-9]?:[0-9]{2}" id="osc--clock--time">
+									<label class="mdl-textfield__label" for="osc--clock--time">Clock</label>
+									<span class="mdl-textfield__error">Not valid!</span>
+								</div><br />
+								<button class="mdl-button mdl-js-button mdl-color-text--green" id="osc--clock--start">START</button>
+								<button class="mdl-button mdl-js-button mdl-color-text--red" id="osc--clock--stop">STOP</button>
+							</div>
 						</div>
 						<script>
+							var timer;
 							document.querySelectorAll("#osc--clock--qtr>*").forEach((h) => { //toggles the five thingies
 								h.addEventListener("click", (f) => {
 									document.querySelectorAll("#osc--clock--qtr>*").forEach((g) => g.classList.remove("mdl-button--colored"));
@@ -368,6 +382,33 @@
 								getSetting("quarter").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":x1}}).catch((e) => console.error("[lx2] update failed", e)));
 							}
 							document.querySelectorAll("#osc--clock--qtr>button").forEach((i) => i.addEventListener("click", lx2));
+							// ---
+							function pushClock() {
+								const clock = document.getElementById("osc--clock--time");
+								getSetting("clock-source").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":clock.value}}).catch((e) => console.error("[pushClock] update failed", e)));
+							}
+							document.getElementById("osc--clock--start").addEventListener("click",function() {
+								const clock = document.getElementById("osc--clock--time");
+								if (!timer) timer = setInterval(() => {
+									if (!clock.value.match(/[0-9][0-9]?:[0-9]{2}/)) return clearInterval(timer);
+									let cz = clock.value.split(":");
+									let cm = +cz[0];
+									let cs = +cz[1];
+									let ca = cs + (cm * 60);
+									ca -= 1; // this is where one second is actually subtracted from the clock
+									let cc = (ca % 60).toString();
+									if (cc.length == 1) cc = "0" + cc;
+									let cb = Math.floor(ca / 60).toString() + ":" + cc;
+									clock.value = cb;
+									pushClock();
+									return true;
+								}, 1000)
+							})
+							document.getElementById("osc--clock--stop").addEventListener("click",function() {
+								clearInterval(timer);
+								timer = null;
+								return;
+							});
 						</script>
 					</div>
 				</div>
@@ -481,7 +522,7 @@
 		document.querySelector("#osc--settings--flag").value = getSetting("flag") || "";
 		document.querySelector("#osc--settings--review").value = getSetting("review") || "";
 		document.querySelector("#osc--settings--quarter").value = getSetting("quarter") || "";
-		//document.querySelector("#osc--settings--clock").value = getSetting("clock-source") || "";
+		document.querySelector("#osc--settings--clock").value = getSetting("clock-source") || "";
 		// ---
 		document.querySelector("#osc--settings--settings-holder").addEventListener("blur",(e) => {localStorage.setItem("osc--settingHolder",e.target.value)});
 		document.querySelector("#osc--settings--score1").addEventListener("blur",(e) => {setSetting("score1",e.target.value)});
@@ -500,7 +541,7 @@
 		document.querySelector("#osc--settings--flag").addEventListener("blur",(e) => {setSetting("flag",e.target.value)});
 		document.querySelector("#osc--settings--review").addEventListener("blur",(e) => {setSetting("review",e.target.value)});
 		document.querySelector("#osc--settings--quarter").addEventListener("blur",(e) => {setSetting("quarter",e.target.value)});
-		//document.querySelector("#osc--settings--clock").addEventListener("blur",(e) => {setSetting("clock-source",e.target.value)});
+		document.querySelector("#osc--settings--clock").addEventListener("blur",(e) => {setSetting("clock-source",e.target.value)});
 	</script>
 	<!-- Snackbar -->
 	<div id="osc--snackbar" class="mdl-js-snackbar mdl-snackbar">
