@@ -226,6 +226,14 @@
 										obs.send("SetSceneItemProperties",{"scene-name":getSetting("possession-scene").split(/,[ ]?/)[0],
 											"item": getSetting("possession2").split(/,[ ]?/)[0], "visible": e.target.checked})
 									});
+									document.querySelector("#osc--status--flag").addEventListener("blur",(e) => {
+										obs.send("SetSceneItemProperties",{"scene-name":getSetting("flag-review-scene").split(/,[ ]?/)[0],
+											"item": getSetting("flag").split(/,[ ]?/)[0], "visible": false});
+									});
+									document.querySelector("#osc--status--review").addEventListener("blur",(e) => {
+										obs.send("SetSceneItemProperties",{"scene-name":getSetting("flag-review-scene").split(/,[ ]?/)[0],
+											"item": getSetting("review").split(/,[ ]?/)[0], "visible": false});
+									});
 								})
 							</script>
 						</div>
@@ -388,6 +396,9 @@
 		document.querySelector("#osc--settings--possession-scene").value = getSetting("possession-scene") || "";
 		document.querySelector("#osc--settings--possession1").value = getSetting("possession1") || "";
 		document.querySelector("#osc--settings--possession2").value = getSetting("possession2") || "";
+		document.querySelector("#osc--settings--flag-review-scene").value = getSetting("flag-review-scene") || "";
+		document.querySelector("#osc--settings--flag").value = getSetting("flag") || "";
+		document.querySelector("#osc--settings--review").value = getSetting("review") || "";
 		// ---
 		document.querySelector("#osc--settings--score1").addEventListener("blur",(e) => {setSetting("score1",e.target.value)});
 		document.querySelector("#osc--settings--score2").addEventListener("blur",(e) => {setSetting("score2",e.target.value)});
@@ -401,6 +412,9 @@
 		document.querySelector("#osc--settings--possession1").addEventListener("blur",(e) => {setSetting("possession1",e.target.value)});
 		document.querySelector("#osc--settings--possession2").addEventListener("blur",(e) => {setSetting("possession2",e.target.value)});
 		document.querySelector("#osc--settings--possession-scene").addEventListener("blur",(e) => {setSetting("possession-scene",e.target.value)});
+		document.querySelector("#osc--settings--flag-review-scene").addEventListener("blur",(e) => {setSetting("flag-review-scene",e.target.value)});
+		document.querySelector("#osc--settings--flag").addEventListener("blur",(e) => {setSetting("flag",e.target.value)});
+		document.querySelector("#osc--settings--review").addEventListener("blur",(e) => {setSetting("review",e.target.value)});
 	</script>
 	<!-- Snackbar -->
 	<div id="osc--snackbar" class="mdl-js-snackbar mdl-snackbar">
