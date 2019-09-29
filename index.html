@@ -157,7 +157,7 @@
 									</thead>
 									<tbody>
 										<tr>
-											<td class="mdl-data-table__cell--non-numeric"><img id="osc--scoreboard--icon__team-1" /></td>
+											<td class="mdl-data-table__cell--non-numeric"><img id="osc--scoreboard--icon__team-1" style="width: 48px" /></td>
 											<td>
 												<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:24px">
 													<input class="mdl-textfield__input" type="number" pattern="[0-9]*(\.[0-9]+)?" id="osc--scoreboard--score__team-1">
@@ -165,7 +165,7 @@
 													<span class="mdl-textfield__error">Invalid!</span>
 												</div>
 											</td>
-											<td style="min-width:98px"><input class="mdl-slider mdl-js-slider" id="osc--scoreboard--timeouts__team-1" type="range" min="0" max="3" value="3" tabindex="0"></td>
+											<td style="min-width:256px"><input class="mdl-slider mdl-js-slider" id="osc--scoreboard--timeouts__team-1" type="range" min="0" max="3" value="3" tabindex="0"></td>
 											<td>
 												<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="osc--scoreboard--possession__team-1">
 													<input type="radio" name="osc--scoreboard--possession" class="mdl-radio__button" id="osc--scoreboard--possession__team-1" value="1">
@@ -173,7 +173,7 @@
 											</td>
 										</tr>
 										<tr>
-											<td class="mdl-data-table__cell--non-numeric"><img id="osc--scoreboard--icon__team-2" /></td>
+											<td class="mdl-data-table__cell--non-numeric"><img id="osc--scoreboard--icon__team-2" style="width: 48px" /></td>
 											<td>
 												<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:24px">
 													<input class="mdl-textfield__input" type="number" pattern="[0-9]*(\.[0-9]+)?" id="osc--scoreboard--score__team-2">
@@ -181,7 +181,7 @@
 													<span class="mdl-textfield__error">Invalid!</span>
 												</div>
 											</td>
-											<td style="min-width:98px"><input class="mdl-slider mdl-js-slider" id="osc--scoreboard--timeouts__team-2" type="range" min="0" max="3" value="3" tabindex="0"></td>
+											<td style="min-width:256px"><input class="mdl-slider mdl-js-slider" id="osc--scoreboard--timeouts__team-2" type="range" min="0" max="3" value="3" tabindex="0"></td>
 											<td>
 												<label class="mdl-radio mdl-js-radio mdl-js-ripple-effect" for="osc--scoreboard--possession__team-2">
 													<input type="radio" name="osc--scoreboard--possession" class="mdl-radio__button" id="osc--scoreboard--possession__team-2" value="2">
@@ -209,6 +209,8 @@
 										{"scene-name": getSetting("possession-scene").split(/,[ ]?/)[0], 
 										"item": getSetting("possession2").split(/,[ ]?/)[0]}).then((data) => 
 											{document.querySelector("#osc--scoreboard--possession__team-2").checked = data.visible});
+									obs.send("GetSourceSettings",{"sourceName": getSetting("image1").split(/,[ ]?/)[0]}).then((data) => {document.querySelector("#osc--scoreboard--icon__team-1").src = data.sourceSettings.file});
+									obs.send("GetSourceSettings",{"sourceName": getSetting("image2").split(/,[ ]?/)[0]}).then((data) => {document.querySelector("#osc--scoreboard--icon__team-2").src = data.sourceSettings.file});
 									// ---
 									document.querySelector("#osc--scoreboard--score__team-1").addEventListener("blur",(e) => {
 										getSetting("score1").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":e.target.value}}))
