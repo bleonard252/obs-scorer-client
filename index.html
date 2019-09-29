@@ -273,7 +273,7 @@
 									document.getElementById("osc--status--update").addEventListener("click", lx);
 									specialStatus = (text) => getSetting("status-source").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":text}}));
 									firstn10 = () => {document.querySelectorAll("#osc--status--down>*").forEach((g) => g.classList.remove("mdl-button--colored"));document.querySelector("#osc--status--down>*").classList.add("mdl-button--colored");
-										document.querySelectorAll("#osc--status--yards").value = "10";}
+										document.querySelector("#osc--status--yards").value = "10";}
 								})
 							</script>
 							<div>
