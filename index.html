@@ -29,108 +29,112 @@
 							<h2 class="mdl-card__title-text">Settings</h2>
 						</div></summary>
 						<div class="mdl-card__supporting-text">
-							<!-- Registration-->
-							<div>
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--url">
-									<label class="mdl-textfield__label" for="osc--settings--url">URL and Port</label>
+							<div class="mdl-tabs mdl-js-tabs mdl-js-ripple-effect">
+								<div class="mdl-tabs__tab-bar">
+									<a href="#osc--settings--connection-panel" class="mdl-tabs__tab is-active">Connection + Sync</a>
+									<a href="#osc--settings--away-panel" class="mdl-tabs__tab">Away Team</a>
+									<a href="#osc--settings--home-panel" class="mdl-tabs__tab">Home Team</a>
+									<a href="#osc--settings--gamestatus-panel" class="mdl-tabs__tab">Game Status</a>
 								</div>
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="password" id="osc--settings--password">
-									<label class="mdl-textfield__label" for="osc--settings--password">Password (if applicable)</label>
+								
+								<div class="mdl-tabs__panel is-active" id="osc--settings--connection-panel">
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--url">
+										<label class="mdl-textfield__label" for="osc--settings--url">URL and Port</label>
+									</div>
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="password" id="osc--settings--password">
+										<label class="mdl-textfield__label" for="osc--settings--password">Password (if applicable)</label>
+									</div>
+									<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="osc--settings--login-button">
+										Sign In
+									</button><br />
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--settings-holder">
+										<label class="mdl-textfield__label" for="osc--settings--settings-holder">Settings Synchronization Source</label>
+									</div>
+									<button type="button" class="mdl-button mdl-js-button mdl-button--colored" id="osc--settings--sync-button"
+										onClick="pushSettings()">Sync (Push)</button>
+									<button type="button" class="mdl-button mdl-js-button mdl-button--colored" id="osc--settings--pull-button"
+										onClick="pullSettings()">Sync (Pull)</button>
 								</div>
-								<button class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored" id="osc--settings--login-button">
-									Sign In
-								</button><br />
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--settings-holder">
-									<label class="mdl-textfield__label" for="osc--settings--settings-holder">Settings Synchronization Source</label>
+								<div class="mdl-tabs__panel" id="osc--settings--away-panel">
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--score1">
+										<label class="mdl-textfield__label" for="osc--settings--score1">Away Team Score Source</label>
+									</div>
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" title="Timeouts are output as dashes.">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--timeouts1">
+										<label class="mdl-textfield__label" for="osc--settings--timeouts1">Away Team Timeout Dashes Source</label>
+									</div>
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--image1">
+										<label class="mdl-textfield__label" for="osc--settings--image1">Away Team Icon Source</label>
+									</div>
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--possession1">
+										<label class="mdl-textfield__label" for="osc--settings--possession1">Away Team Possession Source</label>
+									</div>
 								</div>
-							</div>
-							<!-- Scene and Source Name -->
-							<div>
-								<!-- //# Setting Fields -->
-								You can comma-separate these values. 
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--score1">
-									<label class="mdl-textfield__label" for="osc--settings--score1">Away Team Score Source</label>
+								<div class="mdl-tabs__panel" id="osc--settings--home-panel">
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--score2">
+										<label class="mdl-textfield__label" for="osc--settings--score2">Home Team Score Source</label>
+									</div>
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" title="Timeouts are output as dashes.">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--timeouts2">
+										<label class="mdl-textfield__label" for="osc--settings--timeouts2">Home Team Timeout Dashes Source</label>
+									</div>
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--image2">
+										<label class="mdl-textfield__label" for="osc--settings--image2">Home Team Icon Source</label>
+									</div>
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--possession2">
+										<label class="mdl-textfield__label" for="osc--settings--possession2">Home Team Possession Source</label>
+									</div>
 								</div>
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--score2">
-									<label class="mdl-textfield__label" for="osc--settings--score2">Home Team Score Source</label>
+								<div class="mdl-tabs__panel" id="osc--settings--gamestatus-panel">
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--status">
+										<label class="mdl-textfield__label" for="osc--settings--status">Status/Downs Text Source</label>
+									</div>
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--idle">
+										<label class="mdl-textfield__label" for="osc--settings--idle">Idle Status Text</label>
+									</div>
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--lineage">
+										<label class="mdl-textfield__label" for="osc--settings--lineage">Line of Possession Source</label>
+									</div>
+									<!---->
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--possession-scene">
+										<label class="mdl-textfield__label" for="osc--settings--possession-scene">Possession Scene</label>
+									</div>
+									<!---->
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--flag-review-scene">
+										<label class="mdl-textfield__label" for="osc--settings--flag-review-scene">Flag/Review Scene</label>
+									</div>
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--flag">
+										<label class="mdl-textfield__label" for="osc--settings--flag">Flag Source</label>
+									</div>
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--review">
+										<label class="mdl-textfield__label" for="osc--settings--review">Review Source</label>
+									</div>
+									<!---->
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--quarter">
+										<label class="mdl-textfield__label" for="osc--settings--quarter">Quarter Source</label>
+									</div>
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--clock">
+										<label class="mdl-textfield__label" for="osc--settings--clock">Game Clock Source</label>
+									</div>
 								</div>
-								<!---->
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" title="Timeouts are output as dashes.">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--timeouts1">
-									<label class="mdl-textfield__label" for="osc--settings--timeouts1">Away Team Timeout Dashes Source</label>
-								</div>
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" title="Timeouts are output as dashes.">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--timeouts2">
-									<label class="mdl-textfield__label" for="osc--settings--timeouts2">Home Team Timeout Dashes Source</label>
-								</div>
-								<!---->
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--image1">
-									<label class="mdl-textfield__label" for="osc--settings--image1">Away Team Icon Source</label>
-								</div>
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--image2">
-									<label class="mdl-textfield__label" for="osc--settings--image2">Home Team Icon Source</label>
-								</div>
-								<!---->
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--status">
-									<label class="mdl-textfield__label" for="osc--settings--status">Status/Downs Text Source</label>
-								</div>
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--idle">
-									<label class="mdl-textfield__label" for="osc--settings--idle">Idle Status Text</label>
-								</div>
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--lineage">
-									<label class="mdl-textfield__label" for="osc--settings--lineage">Line of Possession Source</label>
-								</div>
-								<!---->
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--possession-scene">
-									<label class="mdl-textfield__label" for="osc--settings--possession-scene">Possession Scene</label>
-								</div>
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--possession1">
-									<label class="mdl-textfield__label" for="osc--settings--possession1">Away Team Possession Source</label>
-								</div>
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--possession2">
-									<label class="mdl-textfield__label" for="osc--settings--possession2">Home Team Possession Source</label>
-								</div>
-								<!---->
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--flag-review-scene">
-									<label class="mdl-textfield__label" for="osc--settings--flag-review-scene">Flag/Review Scene</label>
-								</div>
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--flag">
-									<label class="mdl-textfield__label" for="osc--settings--flag">Flag Source</label>
-								</div>
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--review">
-									<label class="mdl-textfield__label" for="osc--settings--review">Review Source</label>
-								</div>
-								<!---->
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--quarter">
-									<label class="mdl-textfield__label" for="osc--settings--quarter">Quarter Source</label>
-								</div>
-								<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-									<input class="mdl-textfield__input" type="text" id="osc--settings--clock">
-									<label class="mdl-textfield__label" for="osc--settings--clock">Game Clock Source</label>
-								</div>
-							</div>
-							<div class="mdl-dialog__actions">
-								<button type="button" class="mdl-button mdl-js-button mdl-button--colored" id="osc--settings--sync-button"
-									onClick="pushSettings()">Sync (Push)</button>
-								<button type="button" class="mdl-button mdl-js-button mdl-button--colored" id="osc--settings--pull-button"
-									onClick="pullSettings()">Sync (Pull)</button>
 							</div>
 						</div></details>
 					</div>
