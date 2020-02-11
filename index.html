@@ -101,11 +101,19 @@
 									</div>
 									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 										<input class="mdl-textfield__input" type="text" id="osc--settings--idle">
-										<label class="mdl-textfield__label" for="osc--settings--idle">Idle Status Text</label>
+										<label class="mdl-textfield__label" for="osc--settings--idle">Basic Status Text</label>
 									</div>
 									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 										<input class="mdl-textfield__input" type="text" id="osc--settings--lineage">
 										<label class="mdl-textfield__label" for="osc--settings--lineage">Line of Possession Source</label>
+									</div>
+									<label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="osc--settings--status-hide-on-basic">
+										<input type="checkbox" id="osc--settings--status-hide-on-basic" class="mdl-switch__input" checked>
+										<span class="mdl-switch__label" for="osc--settings--status-hide-on-basic">Hide Status/Downs instead of Basic</span>
+									</label>
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--status-container">
+										<label class="mdl-textfield__label" for="osc--settings--status-container">Status/Downs Container</label>
 									</div>
 									<!---->
 									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -322,14 +330,34 @@
 									}
 									document.getElementById("osc--status--yards").addEventListener("blur", lx);
 									document.getElementById("osc--status--update").addEventListener("click", lx);
-									specialStatus = (text) => getSetting("status-source").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":text}}));
-									firstn10 = () => {document.querySelectorAll("#osc--status--down>*").forEach((g) => g.classList.remove("mdl-button--colored"));document.querySelector("#osc--status--down>*").classList.add("mdl-button--colored");
-										document.querySelector("#osc--status--yards").value = "10";}
+									var idled = false
+									specialStatus = (text) => {
+										console.log("E")
+										if (getSetting('status-hide-on-basic') && text == getSetting('idle').toUpperCase()) {
+											obs.send("SetSceneItemProperties",{"scene-name":getSetting("flag-review-scene").split(/,[ ]?/)[0],
+											"item": getSetting("status-container").split(/,[ ]?/)[0], "visible": false});
+											idled = true; 
+										} else {
+											getSetting("status-source").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":text}}));
+											obs.send("SetSceneItemProperties",{"scene-name":getSetting("flag-review-scene").split(/,[ ]?/)[0],
+											"item": getSetting("status-container").split(/,[ ]?/)[0], "visible": true});
+										}
+									}
+									firstn10 = () => {
+										document.querySelectorAll("#osc--status--down>*").forEach((g) => g.classList.remove("mdl-button--colored"));
+										document.querySelector("#osc--status--down>*").classList.add("mdl-button--colored");
+										document.querySelector("#osc--status--yards").value = "10";
+										obs.send("SetSceneItemProperties",{"scene-name":getSetting("flag-review-scene").split(/,[ ]?/)[0],
+											"item": getSetting("status-container").split(/,[ ]?/)[0], "visible": true});
+									}
 									clearStatus = () => {
 										obs.send("SetSceneItemProperties",{"scene-name":getSetting("flag-review-scene").split(/,[ ]?/)[0],
 											"item": getSetting("flag").split(/,[ ]?/)[0], "visible": false});
 										obs.send("SetSceneItemProperties",{"scene-name":getSetting("flag-review-scene").split(/,[ ]?/)[0],
 											"item": getSetting("review").split(/,[ ]?/)[0], "visible": false});
+										if (!idled) obs.send("SetSceneItemProperties",{"scene-name":getSetting("flag-review-scene").split(/,[ ]?/)[0],
+											"item": getSetting("status-container").split(/,[ ]?/)[0], "visible": true});
+										else idled = false
 									}
 								})
 							</script>
@@ -520,6 +548,8 @@
 		document.querySelector("#osc--settings--image2").value = getSetting("image2") || "";
 		document.querySelector("#osc--settings--status").value = getSetting("status-source") || "";
 		document.querySelector("#osc--settings--idle").value = getSetting("idle") || "";
+		document.querySelector("#osc--settings--status-hide-on-basic").checked = getSetting("status-hide-on-basic") || "";
+		document.querySelector("#osc--settings--status-container").value = getSetting("status-container") || "";
 		document.querySelector("#osc--settings--lineage").value = getSetting("lineage") || "";
 		document.querySelector("#osc--settings--possession-scene").value = getSetting("possession-scene") || "";
 		document.querySelector("#osc--settings--possession1").value = getSetting("possession1") || "";
@@ -539,6 +569,8 @@
 		document.querySelector("#osc--settings--image2").addEventListener("blur",(e) => {setSetting("image2",e.target.value)});
 		document.querySelector("#osc--settings--status").addEventListener("blur",(e) => {setSetting("status-source",e.target.value)});
 		document.querySelector("#osc--settings--idle").addEventListener("blur",(e) => {setSetting("idle",e.target.value)});
+		document.querySelector("#osc--settings--status-hide-on-basic").addEventListener("blur",(e) => {setSetting("status-hide-on-basic",e.target.checked)});
+		document.querySelector("#osc--settings--status-container").addEventListener("blur",(e) => {setSetting("status-container",e.target.value)});
 		document.querySelector("#osc--settings--lineage").addEventListener("blur",(e) => {setSetting("lineage",e.target.value)});
 		document.querySelector("#osc--settings--possession1").addEventListener("blur",(e) => {setSetting("possession1",e.target.value)});
 		document.querySelector("#osc--settings--possession2").addEventListener("blur",(e) => {setSetting("possession2",e.target.value)});
