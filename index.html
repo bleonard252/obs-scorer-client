@@ -169,7 +169,7 @@
 						</div>
 						<div class="mdl-card__supporting-text" style="overflow-x:auto">
 							<form>
-								<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp">
+								<table class="mdl-data-table mdl-js-data-table mdl-shadow--2dp osc--scoreboard">
 									<thead>
 										<tr>
 											<!-- <th class="mdl-data-table__cell--non-numeric">Name</th> -->
@@ -240,8 +240,14 @@
 								obs.on("AuthenticationSuccess",() => {
 									obs.send("GetSourceSettings",{"sourceName": getSetting("score1").split(/,[ ]?/)[0]}).then((data) => {document.querySelector("#osc--scoreboard--score__team-1").value = data.sourceSettings.text});
 									obs.send("GetSourceSettings",{"sourceName": getSetting("score2").split(/,[ ]?/)[0]}).then((data) => {document.querySelector("#osc--scoreboard--score__team-2").value = data.sourceSettings.text});
-									obs.send("GetSourceSettings",{"sourceName": getSetting("timeouts1").split(/,[ ]?/)[0]}).then((data) => {document.querySelector("#osc--scoreboard--timeouts__team-1").MaterialSlider.change(data.sourceSettings.text.match(/-/g) || [].length)});
-									obs.send("GetSourceSettings",{"sourceName": getSetting("timeouts2").split(/,[ ]?/)[0]}).then((data) => {document.querySelector("#osc--scoreboard--timeouts__team-2").MaterialSlider.change(data.sourceSettings.text.match(/-/g) || [].length)});
+									//obs.send("GetSourceSettings",{"sourceName": getSetting("timeouts1").split(/,[ ]?/)[0]}).then((data) => {document.querySelector("#osc--scoreboard--timeouts__team-1").MaterialSlider.change(data.sourceSettings.text.match(/-/g) || [].length)});
+									//obs.send("GetSourceSettings",{"sourceName": getSetting("timeouts2").split(/,[ ]?/)[0]}).then((data) => {document.querySelector("#osc--scoreboard--timeouts__team-2").MaterialSlider.change(data.sourceSettings.text.match(/-/g) || [].length)});
+									obs.send("GetSceneItemProperties",{"scene-name": getSetting("possession-scene").split(/,[ ]?/)[0], "item": getSetting("timeouts1").split(/,[ ]?/)[0] + "1"}).then((data) => {document.querySelector("#osc--scoreboard--timeout-1__team-1").checked = data.visible});
+									obs.send("GetSceneItemProperties",{"scene-name": getSetting("possession-scene").split(/,[ ]?/)[0], "item": getSetting("timeouts1").split(/,[ ]?/)[0] + "2"}).then((data) => {document.querySelector("#osc--scoreboard--timeout-2__team-1").checked = data.visible});
+									obs.send("GetSceneItemProperties",{"scene-name": getSetting("possession-scene").split(/,[ ]?/)[0], "item": getSetting("timeouts1").split(/,[ ]?/)[0] + "3"}).then((data) => {document.querySelector("#osc--scoreboard--timeout-3__team-1").checked = data.visible});
+									obs.send("GetSceneItemProperties",{"scene-name": getSetting("possession-scene").split(/,[ ]?/)[0], "item": getSetting("timeouts2").split(/,[ ]?/)[0] + "1"}).then((data) => {document.querySelector("#osc--scoreboard--timeout-1__team-2").checked = data.visible});
+									obs.send("GetSceneItemProperties",{"scene-name": getSetting("possession-scene").split(/,[ ]?/)[0], "item": getSetting("timeouts2").split(/,[ ]?/)[0] + "2"}).then((data) => {document.querySelector("#osc--scoreboard--timeout-2__team-2").checked = data.visible});
+									obs.send("GetSceneItemProperties",{"scene-name": getSetting("possession-scene").split(/,[ ]?/)[0], "item": getSetting("timeouts2").split(/,[ ]?/)[0] + "3"}).then((data) => {document.querySelector("#osc--scoreboard--timeout-3__team-2").checked = data.visible});
 									obs.send("GetSourceSettings",{"sourceName": getSetting("quarter").split(/,[ ]?/)[0]}).then((data) => {
 										document.querySelectorAll("#osc--clock--qtr>*").forEach((g) => g.classList.remove("mdl-button--colored")); 
 										document.querySelector("#osc--clock--qtr__"+data.sourceSettings.text.replace(/ST|ND|RD|TH/,"").replace("OT","ot")).classList.add("mdl-button--colored")});
@@ -263,7 +269,7 @@
 									document.querySelector("#osc--scoreboard--score__team-2").addEventListener("blur",(e) => {
 										getSetting("score2").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":e.target.value}}))
 									});
-									document.querySelector("#osc--scoreboard--timeouts__team-1").addEventListener("input",(e) => {
+									/*document.querySelector("#osc--scoreboard--timeouts__team-1").addEventListener("input",(e) => {
 										getSetting("timeouts1").split(/,[ ]?/).forEach((h) => {
 											let x;
 											if (e.target.value == 1) x = "-";
@@ -282,7 +288,18 @@
 											else x = " ";
 											obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":x}})
 										})
-									});
+									});*/
+									/**
+									* @param {Event} e
+									*/
+									var timeoutupdate = (e) => {
+										//e.currentTarget.checked
+										let f = e.currentTarget.id; "".match(/osc--scoreboard--timeout-(\d)__team-(\d)/);
+										let tonum = f[1];
+										let team = f[2];// == "1" ? "away" : "home";
+										obs.send("SetSceneItemProperties",{"scene-name":getSetting("possession-scene").split(/,[ ]?/)[0],
+											"item": getSetting("timeouts"+team).split(/,[ ]?/)[0]+tonum, "visible": e.currentTarget.checked});
+									}
 									document.querySelector("#osc--scoreboard--possession__team-0").addEventListener("blur",(e) => {
 										obs.send("SetSceneItemProperties",{"scene-name":getSetting("possession-scene").split(/,[ ]?/)[0],
 											"item": getSetting("possession1").split(/,[ ]?/)[0], "visible": false});
@@ -319,6 +336,12 @@
 									});
 								})
 							</script>
+							<style>
+								table.osc--scoreboard td>label.mdl-checkbox {
+									display: inline;
+									padding-right: 32px;
+								}
+							</style>
 						</div>
 					</div>
 					<div class="mdl-color--white mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col">
