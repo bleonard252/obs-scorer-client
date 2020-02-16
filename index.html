@@ -302,10 +302,22 @@
 							</div>
 							<div>
 								& <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="width:48px">
-									<input class="mdl-textfield__input" type="number" pattern="[0-9]*(\.[0-9]+)?|GOAL|INCHES|IN|LONG|MED|MEDIUM|SHORT" id="osc--status--yards">
 									<label class="mdl-textfield__label" for="osc--status--yards">Yards to Go</label>
-									<span class="mdl-textfield__error">Not valid!</span>
+									<input class="mdl-textfield__input" type="number" pattern="[0-9]*(\.[0-9]+)?|GOAL|INCHES|IN|LONG|MED|MEDIUM|SHORT" id="osc--status--yards">
 								</div> yards
+								<button class="mdl-button mdl-js-button" id="osc--status--goal">GOAL</button>
+								<button class="mdl-button mdl-js-button" id="osc--status--inches">INCHES</button>
+								<br />
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-color-text--green" id="osc--status--add-1" onclick="modstatus(1)">1</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-color-text--green" id="osc--status--add-5" onclick="modstatus(5)">5</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-color-text--green" id="osc--status--add-10" onclick="modstatus(10)">10</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-color-text--green" id="osc--status--add-50" onclick="modstatus(50)">50</button>
+								<br />
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-color-text--red" id="osc--status--remove-1" onclick="modstatus(-1)">1</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-color-text--red" id="osc--status--remove-5" onclick="modstatus(-5)">5</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-color-text--red" id="osc--status--remove-10" onclick="modstatus(-10)">10</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-color-text--red" id="osc--status--remove-50" onclick="modstatus(-50)">50</button>
+								<br />
 								<button class="mdl-button mdl-js-button" id="osc--status--update" onClick="clearStatus()">SEND</button>
 							</div>
 							<script>
@@ -328,8 +340,22 @@
 										let x2 = document.querySelector("#osc--status--yards").value;
 										getSetting("status-source").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":x1+" & "+x2}}));
 									}
+									function lx2(e) { //update the status thingy
+										let x1 = document.querySelector("#osc--status--down .mdl-button--colored").innerHTML;
+										x1 = x1.replace("1","1ST");
+										x1 = x1.replace("2","2ND");
+										x1 = x1.replace("3","3RD");
+										x1 = x1.replace("4","4TH");
+										let x2 = 
+											e.target.id.includes("goal") ? "GOAL" :
+											e.target.id.includes("inches") ? "INCHES" :
+											"???";
+										getSetting("status-source").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":x1+" & "+x2}}));
+									}
 									document.getElementById("osc--status--yards").addEventListener("blur", lx);
 									document.getElementById("osc--status--update").addEventListener("click", lx);
+									document.getElementById("osc--status--goal").addEventListener("click", lx2);
+									document.getElementById("osc--status--inches").addEventListener("click", lx2);
 									var idled = false
 									specialStatus = (text) => {
 										console.log("E")
@@ -360,6 +386,11 @@
 										else idled = false
 									}
 								})
+								function modstatus(by) {
+									const yards = document.querySelector("#osc--status--yards");
+									yards.value = (Number(value) + by).toString();
+									// don't push status; that way you can fine tune it more
+								}
 							</script>
 							<div>
 								<button class="mdl-button mdl-js-button mdl-button--colored" id="osc--status--idle"
