@@ -396,6 +396,23 @@
 								</div><br />
 								<button class="mdl-button mdl-js-button mdl-color-text--green" id="osc--clock--start">START</button>
 								<button class="mdl-button mdl-js-button mdl-color-text--red" id="osc--clock--stop">STOP</button>
+								<br />
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-color-text--green" id="osc--clock--add-1" onclick="modclock(1)">1</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-color-text--green" id="osc--clock--add-5" onclick="modclock(5)">5</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-color-text--green" id="osc--clock--add-10" onclick="modclock(10)">10</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-color-text--green" id="osc--clock--add-30" onclick="modclock(30)">30</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-color-text--green" id="osc--clock--add-30" onclick="modclock(60)">60</button>
+								<br />
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-color-text--red" id="osc--clock--remove-1" onclick="modclock(-1)">1</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-color-text--red" id="osc--clock--remove-5" onclick="modclock(-5)">5</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-color-text--red" id="osc--clock--remove-10" onclick="modclock(-10)">10</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-color-text--red" id="osc--clock--remove-30" onclick="modclock(-30)">30</button>
+								<button class="mdl-button mdl-js-button mdl-button--icon mdl-color-text--red" id="osc--clock--remove-30" onclick="modclock(-60)">60</button>
+								<br />
+								<button class="mdl-button mdl-js-button mdl-color-text--gray" id="osc--clock--set-0" onclick="setclock(0)">:00</button>
+								<button class="mdl-button mdl-js-button mdl-color-text--gray" id="osc--clock--set-15" onclick="setclock(15)">:15</button>
+								<button class="mdl-button mdl-js-button mdl-color-text--gray" id="osc--clock--set-30" onclick="setclock(30)">:30</button>
+								<button class="mdl-button mdl-js-button mdl-color-text--gray" id="osc--clock--set-45" onclick="setclock(45)">:45</button>
 							</div>
 						</div>
 						<script>
@@ -424,18 +441,19 @@
 							document.getElementById("osc--clock--start").addEventListener("click",function() {
 								const clock = document.getElementById("osc--clock--time");
 								if (!timer) timer = setInterval(() => {
-									if (!clock.value.match(/[0-9][0-9]?:[0-9]{2}/)) return clearInterval(timer);
-									let cz = clock.value.split(":");
-									let cm = +cz[0];
-									let cs = +cz[1];
-									let ca = cs + (cm * 60);
-									ca -= 1; // this is where one second is actually subtracted from the clock
-									let cc = (ca % 60).toString();
-									if (cc.length == 1) cc = "0" + cc;
-									let cb = Math.floor(ca / 60).toString() + ":" + cc;
-									clock.value = cb;
-									pushClock();
-									return true;
+									if (!clock.value.match(/[0-9][0-9]?:[0-9]{2}/) || clock.value == "0:00") return clearInterval(timer);
+									// let cz = clock.value.split(":");
+									// let cm = +cz[0];
+									// let cs = +cz[1];
+									// let ca = cs + (cm * 60);
+									// ca -= 1; // this is where one second is actually subtracted from the clock
+									// let cc = (ca % 60).toString();
+									// if (cc.length == 1) cc = "0" + cc;
+									// let cb = Math.floor(ca / 60).toString() + ":" + cc;
+									// clock.value = cb;
+									// pushClock();
+									// return true;
+									modclock(-1);
 								}, 1000)
 							})
 							document.getElementById("osc--clock--stop").addEventListener("click",function() {
@@ -443,6 +461,37 @@
 								timer = null;
 								return;
 							});
+							// set, add, removes
+							function modclock(to) {
+								const clock = document.getElementById("osc--clock--time");
+								if (!clock.value.match(/[0-9][0-9]?:[0-9]{2}/)) return false;
+								let cz = clock.value.split(":");
+								let cm = +cz[0];
+								let cs = +cz[1];
+								let ca = cs + (cm * 60);
+								ca = ca + to;
+								let cc = (ca % 60).toString();
+								if (cc.length == 1) cc = "0" + cc;
+								let cb = Math.floor(ca / 60).toString() + ":" + cc;
+								clock.value = cb;
+								pushClock();
+								return true;
+							}
+							function setclock(to) {
+								const clock = document.getElementById("osc--clock--time");
+								if (!clock.value.match(/[0-9][0-9]?:[0-9]{2}/)) return false;
+								let cz = clock.value.split(":");
+								cz[1] = to.toString()
+								let cm = +cz[0];
+								let cs = +cz[1];
+								let ca = cs + (cm * 60);
+								let cc = (ca % 60).toString();
+								if (cc.length == 1) cc = "0" + cc;
+								let cb = Math.floor(ca / 60).toString() + ":" + cc;
+								clock.value = cb;
+								pushClock();
+								return true;
+							}
 						</script>
 					</div>
 				</div>
