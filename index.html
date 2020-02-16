@@ -75,6 +75,10 @@
 										<input class="mdl-textfield__input" type="text" id="osc--settings--possession1">
 										<label class="mdl-textfield__label" for="osc--settings--possession1">Away Team Possession Source</label>
 									</div>
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--append1">
+										<label class="mdl-textfield__label" for="osc--settings--append1">Away Team Top Text Container Source</label>
+									</div>
 								</div>
 								<div class="mdl-tabs__panel" id="osc--settings--home-panel">
 									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -92,6 +96,10 @@
 									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 										<input class="mdl-textfield__input" type="text" id="osc--settings--possession2">
 										<label class="mdl-textfield__label" for="osc--settings--possession2">Home Team Possession Source</label>
+									</div>
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--append2">
+										<label class="mdl-textfield__label" for="osc--settings--append2">Home Team Top Text Container Source</label>
 									</div>
 								</div>
 								<div class="mdl-tabs__panel" id="osc--settings--gamestatus-panel">
@@ -119,6 +127,14 @@
 									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 										<input class="mdl-textfield__input" type="text" id="osc--settings--possession-scene">
 										<label class="mdl-textfield__label" for="osc--settings--possession-scene">Possession Scene</label>
+									</div>
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--append3">
+										<label class="mdl-textfield__label" for="osc--settings--append3">Neutral Top Text Container Source</label>
+									</div>
+									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+										<input class="mdl-textfield__input" type="text" id="osc--settings--append-text">
+										<label class="mdl-textfield__label" for="osc--settings--append-text">Top Text Source</label>
 									</div>
 									<!---->
 									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -525,6 +541,53 @@
 							}
 						</script>
 					</div>
+					<div class="mdl-color--white mdl-card mdl-shadow--2dp mdl-cell mdl-cell--4-col">
+						<div class="mdl-card__title">
+							<h2 class="mdl-card__title-text">Top Text</h2>
+						</div>
+						<div class="mdl-card__supporting-text">
+							<div class="mdl-textfield mdl-js-textfield">
+								<input class="mdl-textfield__input" type="text" id="osc--append--text" style="width:100%">
+								<label class="mdl-textfield__label" for="osc--append--text">Use text...</label>
+							</div>
+							<div id="osc--append--presets">
+								<button class="mdl-button mdl-js-button mdl-js-ripple-effect" data-osc-preset="timeout">Timeout</button>
+							</div>
+							<div id="osc--append--actions">
+								<button class="mdl-button mdl-js-button mdl-js-ripple-effect" id="osc--append--neutral-button">Neutral</button>
+								<button class="mdl-button mdl-js-button mdl-js-ripple-effect" id="osc--append--away-button">Away</button>
+								<button class="mdl-button mdl-js-button mdl-js-ripple-effect" id="osc--append--home-button">Home</button>
+								<button class="mdl-button mdl-js-button mdl-js-ripple-effect" id="osc--append--clear-button">Clear</button>
+							</div>
+						</div>
+						<script>
+							/**
+							* @param {Event} e
+							*/
+							function append(e) {
+								//getSetting("append1") //append away. 1 is away, 2 is home, 3 is neutral
+								getSetting("append-text").split(/,[ ]?/).forEach((h) => obs.send("SetSourceSettings",{"sourceName":h,"sourceSettings": {"text":document.getElementById("osc--append--text").value}}));
+								if (e.currentTarget.id == "osc--append--away-button") obs.send("SetSceneItemProperties",{"scene-name":getSetting("possession-scene").split(/,[ ]?/)[0],
+								"item": getSetting("append1").split(/,[ ]?/)[0], "visible": true});
+								if (e.currentTarget.id == "osc--append--home-button") obs.send("SetSceneItemProperties",{"scene-name":getSetting("possession-scene").split(/,[ ]?/)[0],
+								"item": getSetting("append2").split(/,[ ]?/)[0], "visible": true});
+								if (e.currentTarget.id == "osc--append--neutral-button") obs.send("SetSceneItemProperties",{"scene-name":getSetting("possession-scene").split(/,[ ]?/)[0],
+								"item": getSetting("append3").split(/,[ ]?/)[0], "visible": true});
+							}
+							function clearAppend() {
+								obs.send("SetSceneItemProperties",{"scene-name":getSetting("possession-scene").split(/,[ ]?/)[0],
+								"item": getSetting("append1").split(/,[ ]?/)[0], "visible": false});
+								obs.send("SetSceneItemProperties",{"scene-name":getSetting("possession-scene").split(/,[ ]?/)[0],
+								"item": getSetting("append2").split(/,[ ]?/)[0], "visible": false});
+								obs.send("SetSceneItemProperties",{"scene-name":getSetting("possession-scene").split(/,[ ]?/)[0],
+								"item": getSetting("append3").split(/,[ ]?/)[0], "visible": false});
+							}
+							document.getElementById("osc--append--neutral-button").addEventListener("click", append);
+							document.getElementById("osc--append--home-button").addEventListener("click", append);
+							document.getElementById("osc--append--away-button").addEventListener("click", append);
+							document.getElementById("osc--append--clear-button").addEventListener("click", clearAppend);
+						</script>
+					</div>
 				</div>
 			</div>
 		</main>
@@ -626,6 +689,10 @@
 		document.querySelector("#osc--settings--timeouts2").value = getSetting("timeouts2") || "";
 		document.querySelector("#osc--settings--image1").value = getSetting("image1") || "";
 		document.querySelector("#osc--settings--image2").value = getSetting("image2") || "";
+		document.querySelector("#osc--settings--append1").value = getSetting("append1") || "";
+		document.querySelector("#osc--settings--append2").value = getSetting("append2") || "";
+		document.querySelector("#osc--settings--append3").value = getSetting("append3") || "";
+		document.querySelector("#osc--settings--append-text").value = getSetting("append-text") || "";
 		document.querySelector("#osc--settings--status").value = getSetting("status-source") || "";
 		document.querySelector("#osc--settings--idle").value = getSetting("idle") || "";
 		document.querySelector("#osc--settings--status-hide-on-basic").checked = getSetting("status-hide-on-basic") || "";
@@ -647,6 +714,10 @@
 		document.querySelector("#osc--settings--timeouts2").addEventListener("blur",(e) => {setSetting("timeouts2",e.target.value)});
 		document.querySelector("#osc--settings--image1").addEventListener("blur",(e) => {setSetting("image1",e.target.value)});
 		document.querySelector("#osc--settings--image2").addEventListener("blur",(e) => {setSetting("image2",e.target.value)});
+		document.querySelector("#osc--settings--append1").addEventListener("blur",(e) => {setSetting("append1",e.target.value)});
+		document.querySelector("#osc--settings--append2").addEventListener("blur",(e) => {setSetting("append2",e.target.value)});
+		document.querySelector("#osc--settings--append3").addEventListener("blur",(e) => {setSetting("append3",e.target.value)});
+		document.querySelector("#osc--settings--append-text").addEventListener("blur",(e) => {setSetting("append-text",e.target.value)});
 		document.querySelector("#osc--settings--status").addEventListener("blur",(e) => {setSetting("status-source",e.target.value)});
 		document.querySelector("#osc--settings--idle").addEventListener("blur",(e) => {setSetting("idle",e.target.value)});
 		document.querySelector("#osc--settings--status-hide-on-basic").addEventListener("blur",(e) => {setSetting("status-hide-on-basic",e.target.checked)});
