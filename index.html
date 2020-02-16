@@ -65,7 +65,7 @@
 									</div>
 									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" title="Timeouts are output as dashes.">
 										<input class="mdl-textfield__input" type="text" id="osc--settings--timeouts1">
-										<label class="mdl-textfield__label" for="osc--settings--timeouts1">Away Team Timeout Dashes Source</label>
+										<label class="mdl-textfield__label" for="osc--settings--timeouts1">Away Team Timeout Source Prefix</label>
 									</div>
 									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 										<input class="mdl-textfield__input" type="text" id="osc--settings--image1">
@@ -87,7 +87,7 @@
 									</div>
 									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" title="Timeouts are output as dashes.">
 										<input class="mdl-textfield__input" type="text" id="osc--settings--timeouts2">
-										<label class="mdl-textfield__label" for="osc--settings--timeouts2">Home Team Timeout Dashes Source</label>
+										<label class="mdl-textfield__label" for="osc--settings--timeouts2">Home Team Timeout Source Prefix</label>
 									</div>
 									<div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
 										<input class="mdl-textfield__input" type="text" id="osc--settings--image2">
@@ -196,10 +196,10 @@
 													<input type="checkbox" id="osc--scoreboard--timeout-1__team-1" class="mdl-checkbox__input" checked>
 												</label>
 												<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="osc--scoreboard--timeout-2__team-1">
-													<input type="checkbox" id="osc--scoreboard--timeout-1__team-1" class="mdl-checkbox__input" checked>
+													<input type="checkbox" id="osc--scoreboard--timeout-2__team-1" class="mdl-checkbox__input" checked>
 												</label>
 												<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="osc--scoreboard--timeout-3__team-1">
-													<input type="checkbox" id="osc--scoreboard--timeout-1__team-1" class="mdl-checkbox__input" checked>
+													<input type="checkbox" id="osc--scoreboard--timeout-3__team-1" class="mdl-checkbox__input" checked>
 												</label>
 											</td>
 											<td>
@@ -218,13 +218,13 @@
 											</td>
 											<td>
 												<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="osc--scoreboard--timeout-1__team-2">
-													<input type="checkbox" id="osc--scoreboard--timeout-1__team-1" class="mdl-checkbox__input" checked>
+													<input type="checkbox" id="osc--scoreboard--timeout-1__team-2" class="mdl-checkbox__input" checked>
 												</label>
 												<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="osc--scoreboard--timeout-2__team-2">
-													<input type="checkbox" id="osc--scoreboard--timeout-1__team-1" class="mdl-checkbox__input" checked>
+													<input type="checkbox" id="osc--scoreboard--timeout-2__team-2" class="mdl-checkbox__input" checked>
 												</label>
 												<label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="osc--scoreboard--timeout-3__team-2">
-													<input type="checkbox" id="osc--scoreboard--timeout-1__team-1" class="mdl-checkbox__input" checked>
+													<input type="checkbox" id="osc--scoreboard--timeout-3__team-2" class="mdl-checkbox__input" checked>
 												</label>
 											</td>
 											<td>
@@ -292,14 +292,20 @@
 									/**
 									* @param {Event} e
 									*/
-									var timeoutupdate = (e) => {
+									var timeoutupdate = function(e) {
 										//e.currentTarget.checked
-										let f = e.currentTarget.id; "".match(/osc--scoreboard--timeout-(\d)__team-(\d)/);
+										let f = e.currentTarget.id.match(/osc--scoreboard--timeout-(\d)__team-(\d)/);
 										let tonum = f[1];
 										let team = f[2];// == "1" ? "away" : "home";
 										obs.send("SetSceneItemProperties",{"scene-name":getSetting("possession-scene").split(/,[ ]?/)[0],
 											"item": getSetting("timeouts"+team).split(/,[ ]?/)[0]+tonum, "visible": e.currentTarget.checked});
 									}
+									document.getElementById("osc--scoreboard--timeout-1__team-1").addEventListener("change", timeoutupdate);
+									document.getElementById("osc--scoreboard--timeout-2__team-1").addEventListener("change", timeoutupdate);
+									document.getElementById("osc--scoreboard--timeout-3__team-1").addEventListener("change", timeoutupdate);
+									document.getElementById("osc--scoreboard--timeout-1__team-2").addEventListener("change", timeoutupdate);
+									document.getElementById("osc--scoreboard--timeout-2__team-2").addEventListener("change", timeoutupdate);
+									document.getElementById("osc--scoreboard--timeout-3__team-2").addEventListener("change", timeoutupdate);
 									document.querySelector("#osc--scoreboard--possession__team-0").addEventListener("blur",(e) => {
 										obs.send("SetSceneItemProperties",{"scene-name":getSetting("possession-scene").split(/,[ ]?/)[0],
 											"item": getSetting("possession1").split(/,[ ]?/)[0], "visible": false});
