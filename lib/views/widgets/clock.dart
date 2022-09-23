@@ -22,43 +22,58 @@ class ClockEditorCard extends ConsumerWidget {
             children: [
               Text("Game Clock", style: Theme.of(context).textTheme.headline6),
               const SizedBox(height: 16),
-              Wrap(children: [
-                IconButton(onPressed: () => modSeconds(ref, -10), icon: const Text("-10", style: TextStyle(color: Colors.red))),
-                IconButton(onPressed: () => modSeconds(ref, -5), icon: const Text("-5", style: TextStyle(color: Colors.red))),
-                IconButton(onPressed: () => modSeconds(ref, -1), icon: const Text("-1", style: TextStyle(color: Colors.red))),
-                SizedBox(
-                  width: 128,
-                  child: TextField(
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      counterText: ""
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  // style: TextButton.styleFrom(foregroundColor: Colors.green),
+                  TextButton(onPressed: () => modSeconds(ref, -60), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("-60")),
+                  TextButton(onPressed: () => modSeconds(ref, -10), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("-10")),
+                  TextButton(onPressed: () => modSeconds(ref, -5), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("-5")),
+                  TextButton(onPressed: () => modSeconds(ref, -1), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("-1")),
+                  SizedBox(
+                    width: 128,
+                    child: TextField(
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        counterText: ""
+                      ),
+                      maxLength: 3,
+                      keyboardType: TextInputType.number,
+                      // onChanged: (value) {
+                      //   ref.state = ref.state.copyWith(awayScore: int.tryParse(value));
+                      // },
+                      onSubmitted: (value) {
+                        // split the string into minutes and seconds
+                        var split = value.split(":");
+                        // if there's no colon, assume it's just seconds
+                        if (split.length == 1) {
+                          if (int.tryParse(split[0]) == null) return;
+                          setClock(ref, int.parse(split[0]));
+                        }
+                        // if there's a colon, assume it's minutes:seconds
+                        else if (split.length == 2) {
+                          if (int.tryParse(split[0]) == null || int.tryParse(split[1]) == null) return;
+                          setClock(ref, int.parse(split[1]), int.parse(split[0]));
+                        }
+                      },
+                      controller: TextEditingController(text: clock.toString()),
                     ),
-                    maxLength: 3,
-                    keyboardType: TextInputType.number,
-                    // onChanged: (value) {
-                    //   ref.state = ref.state.copyWith(awayScore: int.tryParse(value));
-                    // },
-                    onSubmitted: (value) {
-                      // split the string into minutes and seconds
-                      var split = value.split(":");
-                      // if there's no colon, assume it's just seconds
-                      if (split.length == 1) {
-                        if (int.tryParse(split[0]) == null) return;
-                        setClock(ref, int.parse(split[0]));
-                      }
-                      // if there's a colon, assume it's minutes:seconds
-                      else if (split.length == 2) {
-                        if (int.tryParse(split[0]) == null || int.tryParse(split[1]) == null) return;
-                        setClock(ref, int.parse(split[1]), int.parse(split[0]));
-                      }
-                    },
-                    controller: TextEditingController(text: clock.toString()),
                   ),
-                ),
-                IconButton(onPressed: () => modSeconds(ref, 1), icon: const Text("+1", style: TextStyle(color: Colors.green))),
-                IconButton(onPressed: () => modSeconds(ref, 5), icon: const Text("+5", style: TextStyle(color: Colors.green))),
-                IconButton(onPressed: () => modSeconds(ref, 10), icon: const Text("+10", style: TextStyle(color: Colors.green))),
-              ]),
+                  TextButton(onPressed: () => modSeconds(ref, 1), style: TextButton.styleFrom(foregroundColor: Colors.green), child: const Text("+1")),
+                  TextButton(onPressed: () => modSeconds(ref, 5), style: TextButton.styleFrom(foregroundColor: Colors.green), child: const Text("+5")),
+                  TextButton(onPressed: () => modSeconds(ref, 10), style: TextButton.styleFrom(foregroundColor: Colors.green), child: const Text("+10")),
+                  TextButton(onPressed: () => modSeconds(ref, 60), style: TextButton.styleFrom(foregroundColor: Colors.green), child: const Text("+60")),
+                ]
+              ),
+              Wrap(
+                children: [
+                  TextButton(onPressed: () => setClock(ref, GameClockState(clock.minutes, 0).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":00")),
+                  TextButton(onPressed: () => setClock(ref, GameClockState(clock.minutes, 15).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":15")),
+                  TextButton(onPressed: () => setClock(ref, GameClockState(clock.minutes, 30).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":30")),
+                  TextButton(onPressed: () => setClock(ref, GameClockState(clock.minutes, 45).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":45")),
+                ],
+              ),
+
             ],
           ),
         )
