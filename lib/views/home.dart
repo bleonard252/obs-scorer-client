@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:obs_scorer_client/main.dart';
-import 'package:obs_scorer_client/src/constants.dart';
+import 'package:obs_scorer_client/src/settings.dart';
 import 'package:obs_scorer_client/src/state_class.dart';
 import 'package:obs_scorer_client/views/settings.dart';
 import 'package:obs_scorer_client/views/widgets/scores.dart';
@@ -11,7 +11,7 @@ import 'package:obs_websocket/obs_websocket.dart';
 
 final socketProvider = FutureProvider<ObsWebSocket>((ref) async {
   final box = ref.watch(settingsProvider);
-  final socket = await ObsWebSocket.connect("ws://${box.get(ConnectionSetting.address) ?? "localhost:4455"}", password: box.get(ConnectionSetting.password));
+  final socket = await ObsWebSocket.connect("ws://${box.connection.address ?? "localhost:4455"}", password: box.connection.password);
   ref.onDispose(() {
     socket.close();
   });
@@ -21,13 +21,13 @@ final socketProvider = FutureProvider<ObsWebSocket>((ref) async {
   return socket;
 });
 
-final gameStateProvider = Provider<GameState>((ref) {
+final gameStateProvider = StateProvider<GameState>((ref) {
   final box = ref.watch(settingsProvider);
   final sock = ref.watch(socketProvider).value;
   Future(() async {
     late final GameState gameState;
     try {
-      gameState = ref.state;
+      gameState = ref.controller.state;
     } catch (e) {
       gameState = const GameState();
     }
@@ -37,11 +37,11 @@ final gameStateProvider = Provider<GameState>((ref) {
     String? quarter;
     GameClockState? clock;
     try {
-      awayScore = box.get(SourceSetting.awayScore)?.isNotEmpty == true ? await sock?.inputs.getText(box.get(SourceSetting.awayScore)).then((value) => int.tryParse(value ?? "")) : null;
-      homeScore = box.get(SourceSetting.homeScore)?.isNotEmpty == true ? await sock?.inputs.getText(box.get(SourceSetting.homeScore)).then((value) => int.tryParse(value ?? "")) : null;
-      downs = box.get(SourceSetting.downs)?.isNotEmpty == true ? await sock?.inputs.getText(box.get(SourceSetting.downs)) : null;
-      quarter = box.get(SourceSetting.quarter)?.isNotEmpty == true ? await sock?.inputs.getText(box.get(SourceSetting.quarter)) : null;
-      final clockString = box.get(SourceSetting.clock)?.isNotEmpty == true ? await sock?.inputs.getText(box.get(SourceSetting.clock)) : null;
+      awayScore = box.source.awayScore?.isNotEmpty == true ? await sock?.inputs.getText(box.source.awayScore ?? "").then((value) => int.tryParse(value ?? "")) : null;
+      homeScore = box.source.homeScore?.isNotEmpty == true ? await sock?.inputs.getText(box.source.homeScore ?? "").then((value) => int.tryParse(value ?? "")) : null;
+      downs = box.source.downs?.isNotEmpty == true ? await sock?.inputs.getText(box.source.downs ?? "") : null;
+      quarter = box.source.quarter?.isNotEmpty == true ? await sock?.inputs.getText(box.source.quarter ?? "") : null;
+      final clockString = box.source.clock?.isNotEmpty == true ? await sock?.inputs.getText(box.source.clock ?? "") : null;
       if (clockString != null) {
         final split = clockString.split(":");
         if (split.length == 2) {
@@ -54,7 +54,7 @@ final gameStateProvider = Provider<GameState>((ref) {
       }
       return;
     }
-    ref.state = ref.state.copyWith(
+    ref.controller.state = ref.controller.state.copyWith(
       clock: clock ?? gameState.clock,
       awayScore: awayScore ?? gameState.awayScore,
       homeScore: homeScore ?? gameState.homeScore,
@@ -63,7 +63,7 @@ final gameStateProvider = Provider<GameState>((ref) {
     );
   });
   try {
-    return ref.state;
+    return ref.controller.state;
   } catch (e) {
     return const GameState();
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:hive/hive.dart';
-import 'package:obs_scorer_client/src/constants.dart';
+import 'package:obs_scorer_client/src/settings.dart';
 
 import 'login.dart';
 

@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:hive/hive.dart';
-import 'package:obs_scorer_client/src/constants.dart';
+import 'package:obs_scorer_client/src/settings.dart';
 import 'package:obs_scorer_client/src/settings_cache.dart';
 import 'package:obs_scorer_client/views/home.dart';
 import 'package:obs_scorer_client/views/login.dart';
@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
       ),
       home: Consumer(builder: (context, ref, child) {
         final box = ref.read(settingsProvider);
-        if (box.get(ConnectionSetting.address) == null) {
+        if (box.connection.address == null) {
           return const LoginView();
         } else {
           return const HomeView();

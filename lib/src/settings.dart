@@ -1,0 +1,151 @@
+import 'package:hive/hive.dart';
+
+abstract class ConnectionSetting {
+  static const address = "connect.address";
+  /// The password to authenticate to OBS with.
+  static const password = "connect.password";
+}
+abstract class SourceSetting {
+  /// The name of the source to use for the home score.
+  static const homeScore = "source.homeScore";
+  /// The name of the source to use for the home logo.
+  static const homeLogo = "source.homeLogo";
+  /// The name of the source to use for the away score.
+  static const awayScore = "source.awayScore";
+  /// The name of the source to use for the away logo.
+  static const awayLogo = "source.awayLogo";
+  /// The prefix for the sources to use for the home timeouts.
+  static const homeTimeoutsPrefix = "source.homeTimeoutsPrefix";
+  /// The prefix for the sources to use for the away timeouts.
+  static const awayTimeoutsPrefix = "source.awayTimeouts";
+  /// The name of the source to show when a flag is thrown.
+  static const flagThrown = "source.flag";
+  /// The name of the source to show when a review is called.
+  static const review = "source.review";
+  /// The name of the source to use to show the current down and distance.
+  static const downs = "source.downs";
+  /// The name of the source to hide when no downs are known.
+  static const downsContainer = "source.downsContainer";
+  /// The name of the source to use to show the current quarter.
+  static const quarter = "source.quarter";
+  /// The name of the source to use to show the current game clock.
+  static const clock = "source.clock";
+}
+abstract class BehaviorSetting {
+  /// Whether to hide the downs and distance instead of showing placeholder text.
+  /// When `false`, the placeholder text will be shown in the downs and distance
+  /// source.
+  static const hideDownsWhenNone = "behavior.hideDownsWhenNone";
+  /// The placeholder text to show when no downs and distance are known.
+  static const textWhenNoDowns = "behavior.textWhenNoDowns";
+  /// Whether to uppercase the quarter text (i.e. "1st" -> "1ST").
+  static const uppercaseQuarter = "behavior.uppercaseQuarter";
+  /// Whether to show an "&" between the down and distance (i.e. "1st & 10").
+  /// When `false`, the down and distance will be shown as "1st and 10".
+  static const ampersandDowns = "behavior.ampersandDowns";
+  /// Whether to uppercase the downs text (i.e. "1st and 10" -> "1ST AND 10").
+  static const uppercaseDowns = "behavior.uppercaseDowns";
+}
+
+class _connectionSettings {
+  final Box _box;
+  _connectionSettings(this._box);
+
+  /// The address to connect to OBS with.
+  String? get address => _box.get(ConnectionSetting.address);
+  set address(String? value) => _box.put(ConnectionSetting.address, value);
+
+  /// The password to authenticate to OBS with.
+  String? get password => _box.get(ConnectionSetting.password);
+  set password(String? value) => _box.put(ConnectionSetting.password, value);
+}
+
+class _sourceSettings {
+  final Box _box;
+  _sourceSettings(this._box);
+
+  /// The name of the source to use for the home score.
+  String? get homeScore => _box.get(SourceSetting.homeScore);
+  set homeScore(String? value) => _box.put(SourceSetting.homeScore, value);
+
+  /// The name of the source to use for the home logo.
+  String? get homeLogo => _box.get(SourceSetting.homeLogo);
+  set homeLogo(String? value) => _box.put(SourceSetting.homeLogo, value);
+
+  /// The name of the source to use for the away score.
+  String? get awayScore => _box.get(SourceSetting.awayScore);
+  set awayScore(String? value) => _box.put(SourceSetting.awayScore, value);
+
+  /// The name of the source to use for the away logo.
+  String? get awayLogo => _box.get(SourceSetting.awayLogo);
+  set awayLogo(String? value) => _box.put(SourceSetting.awayLogo, value);
+
+  /// The prefix for the sources to use for the home timeouts.
+  String? get homeTimeoutsPrefix => _box.get(SourceSetting.homeTimeoutsPrefix);
+  set homeTimeoutsPrefix(String? value) => _box.put(SourceSetting.homeTimeoutsPrefix, value);
+
+  /// The prefix for the sources to use for the away timeouts.
+  String? get awayTimeoutsPrefix => _box.get(SourceSetting.awayTimeoutsPrefix);
+  set awayTimeoutsPrefix(String? value) => _box.put(SourceSetting.awayTimeoutsPrefix, value);
+
+  /// The name of the source to show when a flag is thrown.
+  String? get flagThrown => _box.get(SourceSetting.flagThrown);
+  set flagThrown(String? value) => _box.put(SourceSetting.flagThrown, value);
+
+  /// The name of the source to show when a review is called.
+  String? get review => _box.get(SourceSetting.review);
+  set review(String? value) => _box.put(SourceSetting.review, value);
+
+  /// The name of the source to use to show the current down and distance.
+  String? get downs => _box.get(SourceSetting.downs);
+  set downs(String? value) => _box.put(SourceSetting.downs, value);
+
+  /// The name of the source to hide when no downs are known.
+  String? get downsContainer => _box.get(SourceSetting.downsContainer);
+  set downsContainer(String? value) => _box.put(SourceSetting.downsContainer, value);
+
+  /// The name of the source to use to show the current quarter.
+  String? get quarter => _box.get(SourceSetting.quarter);
+  set quarter(String? value) => _box.put(SourceSetting.quarter, value);
+
+  /// The name of the source to use to show the current game clock.
+  String? get clock => _box.get(SourceSetting.clock);
+  set clock(String? value) => _box.put(SourceSetting.clock, value);
+}
+
+class _behaviorSettings {
+  final Box _box;
+  _behaviorSettings(this._box);
+
+  /// Whether to hide the downs and distance instead of showing placeholder text.
+  /// When `false`, the placeholder text will be shown in the downs and distance
+  /// source.
+  bool? get hideDownsWhenNone => _box.get(BehaviorSetting.hideDownsWhenNone);
+  set hideDownsWhenNone(bool? value) => _box.put(BehaviorSetting.hideDownsWhenNone, value);
+
+  /// The placeholder text to show when no downs and distance are known.
+  String? get textWhenNoDowns => _box.get(BehaviorSetting.textWhenNoDowns);
+  set textWhenNoDowns(String? value) => _box.put(BehaviorSetting.textWhenNoDowns, value);
+
+  /// Whether to uppercase the quarter text (i.e. "1st" -> "1ST").
+  bool? get uppercaseQuarter => _box.get(BehaviorSetting.uppercaseQuarter);
+  set uppercaseQuarter(bool? value) => _box.put(BehaviorSetting.uppercaseQuarter, value);
+
+  /// Whether to show an "&" between the down and distance (i.e. "1st & 10").
+  /// When `false`, the down and distance will be shown as "1st and 10".
+  bool? get ampersandDowns => _box.get(BehaviorSetting.ampersandDowns);
+  set ampersandDowns(bool? value) => _box.put(BehaviorSetting.ampersandDowns, value);
+
+  /// Whether to uppercase the downs text (i.e. "1st and 10" -> "1ST AND 10").
+  bool? get uppercaseDowns => _box.get(BehaviorSetting.uppercaseDowns);
+  set uppercaseDowns(bool? value) => _box.put(BehaviorSetting.uppercaseDowns, value);
+}
+
+extension ExtendedSettings on Box {
+  // ignore: library_private_types_in_public_api
+  _connectionSettings get connection => _connectionSettings(this);
+  // ignore: library_private_types_in_public_api
+  _sourceSettings get source => _sourceSettings(this);
+  // ignore: library_private_types_in_public_api
+  _behaviorSettings get behavior => _behaviorSettings(this);
+}

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive/hive.dart';
 import 'package:obs_scorer_client/main.dart';
-import 'package:obs_scorer_client/src/constants.dart';
+import 'package:obs_scorer_client/src/settings.dart';
 import 'package:obs_scorer_client/views/home.dart';
 
 class LoginView extends ConsumerStatefulWidget {
@@ -55,8 +55,8 @@ class _LoginViewState extends ConsumerState<LoginView> {
                       ElevatedButton(
                         onPressed: () {
                           final value = ref.read(settingsProvider);
-                          value.put(ConnectionSetting.address, addressController.text);
-                          value.put(ConnectionSetting.password, passwordController.text);
+                          value.connection.address = addressController.text;
+                          value.connection.password = passwordController.text;
                           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeView()));
                         },
                         child: const Text("Login"),
