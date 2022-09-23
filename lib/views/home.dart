@@ -5,6 +5,7 @@ import 'package:obs_scorer_client/main.dart';
 import 'package:obs_scorer_client/src/constants.dart';
 import 'package:obs_scorer_client/src/state_class.dart';
 import 'package:obs_scorer_client/views/settings.dart';
+import 'package:obs_scorer_client/views/widgets/scores.dart';
 import 'package:obs_scorer_client/views/widgets/summary.dart';
 import 'package:obs_websocket/obs_websocket.dart';
 
@@ -36,11 +37,11 @@ final gameStateProvider = Provider<GameState>((ref) {
     String? quarter;
     GameClockState? clock;
     try {
-      awayScore = box.get(SourceSetting.awayScore)?.isNotEmpty == true ? await sock?.send("GetInputSettings", {"inputName": box.get(SourceSetting.awayScore)}).then((value) => int.tryParse(value?.responseData?["inputSettings"]["text"])) : null;
-      homeScore = box.get(SourceSetting.homeScore)?.isNotEmpty == true ? await sock?.send("GetInputSettings", {"inputName": box.get(SourceSetting.homeScore)}).then((value) => int.tryParse(value?.responseData?["inputSettings"]["text"])) : null;
-      downs = box.get(SourceSetting.downs)?.isNotEmpty == true ? await sock?.send("GetInputSettings", {"inputName": box.get(SourceSetting.downs)}).then((value) => value?.responseData?["inputSettings"]["text"]) : null;
-      quarter = box.get(SourceSetting.quarter)?.isNotEmpty == true ? await sock?.send("GetInputSettings", {"inputName": box.get(SourceSetting.quarter)}).then((value) => value?.responseData?["inputSettings"]["text"]) : null;
-      final clockString = box.get(SourceSetting.clock)?.isNotEmpty == true ? await sock?.send("GetInputSettings", {"inputName": box.get(SourceSetting.clock)}).then((value) => value?.responseData?["inputSettings"]["text"]) : null;
+      awayScore = box.get(SourceSetting.awayScore)?.isNotEmpty == true ? await sock?.inputs.getText(box.get(SourceSetting.awayScore)).then((value) => int.tryParse(value ?? "")) : null;
+      homeScore = box.get(SourceSetting.homeScore)?.isNotEmpty == true ? await sock?.inputs.getText(box.get(SourceSetting.homeScore)).then((value) => int.tryParse(value ?? "")) : null;
+      downs = box.get(SourceSetting.downs)?.isNotEmpty == true ? await sock?.inputs.getText(box.get(SourceSetting.downs)) : null;
+      quarter = box.get(SourceSetting.quarter)?.isNotEmpty == true ? await sock?.inputs.getText(box.get(SourceSetting.quarter)) : null;
+      final clockString = box.get(SourceSetting.clock)?.isNotEmpty == true ? await sock?.inputs.getText(box.get(SourceSetting.clock)) : null;
       if (clockString != null) {
         final split = clockString.split(":");
         if (split.length == 2) {
@@ -92,7 +93,21 @@ class HomeView extends ConsumerWidget {
       ),
       body: Column(
         children: [
-          const Center(child: Padding(padding: EdgeInsets.all(16.0), child: GameStateSummaryWidget()))
+          const Center(child: Padding(padding: EdgeInsets.all(16.0), child: GameStateSummaryWidget())),
+          Wrap(
+            children: [
+              ScoreEditorCard(
+                title: "Away Score",
+                score: gameState.awayScore,
+                setting: SourceSetting.awayScore,
+              ),
+              ScoreEditorCard(
+                title: "Home Score",
+                score: gameState.homeScore,
+                setting: SourceSetting.homeScore,
+              ),
+            ],
+          ),
         ],
       ),
     );

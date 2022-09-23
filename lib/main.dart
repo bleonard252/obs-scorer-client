@@ -9,10 +9,11 @@ import 'package:obs_scorer_client/src/constants.dart';
 import 'package:obs_scorer_client/src/settings_cache.dart';
 import 'package:obs_scorer_client/views/home.dart';
 import 'package:obs_scorer_client/views/login.dart';
+import 'package:obs_websocket/request.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  Hive.init(Directory("~/.config/obs_scorer_client/").absolute.path);
+  Hive.init(Directory(".config/obs_scorer_client/").absolute.path);
   await Settings.init(cacheProvider: HiveSettingsCache("settings"));
   await Hive.openBox("settings");
   runApp(const ProviderScope(child: MyApp()));
@@ -43,5 +44,23 @@ class MyApp extends StatelessWidget {
         }
       }),
     );
+  }
+}
+
+extension InputSettings on Inputs {
+  /// Set the text on a text input.
+  Future<void> setText(String inputName, String text) async {
+    await obsWebSocket.send("SetInputSettings", {
+      "inputName": inputName,
+      "inputSettings": {
+        "text": text,
+      }
+    });
+  }
+  Future<String?> getText(String inputName) async {
+    final response = await obsWebSocket.send("GetInputSettings", {
+      "inputName": inputName,
+    });
+    return response?.responseData?["text"];
   }
 }
