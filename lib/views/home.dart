@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:loggy/loggy.dart';
 import 'package:obs_scorer_client/main.dart';
 import 'package:obs_scorer_client/src/settings.dart';
 import 'package:obs_scorer_client/src/state_class.dart';
 import 'package:obs_scorer_client/views/settings.dart';
+import 'package:obs_scorer_client/views/widgets/clock.dart';
 import 'package:obs_scorer_client/views/widgets/scores.dart';
 import 'package:obs_scorer_client/views/widgets/summary.dart';
 import 'package:obs_websocket/obs_websocket.dart';
@@ -15,58 +17,76 @@ final socketProvider = FutureProvider<ObsWebSocket>((ref) async {
   ref.onDispose(() {
     socket.close();
   });
-  // hoping I don't need to say this because it isn't mentioned anywhere
-  // await socket.init();
-  // await socket.authenticate();
   return socket;
 });
 
-final gameStateProvider = StateProvider<GameState>((ref) {
+final gameStateLogger = Loggy("gameStateProvider");
+final _gameStateProvider = StreamProvider<GameState>((ref) async* {
+  //yield const GameState(awayScore: 42);
   final box = ref.watch(settingsProvider);
-  final sock = ref.watch(socketProvider).value;
-  Future(() async {
-    late final GameState gameState;
-    try {
-      gameState = ref.controller.state;
-    } catch (e) {
-      gameState = const GameState();
+  ObsWebSocket? sock = ref.watch(socketProvider).value;
+  if (sock == null) {
+    if (kDebugMode) {
+      gameStateLogger.warning("Socket is null, stopping stream");
     }
-    int? awayScore;
-    int? homeScore;
-    String? downs;
-    String? quarter;
-    GameClockState? clock;
-    try {
-      awayScore = box.source.awayScore?.isNotEmpty == true ? await sock?.inputs.getText(box.source.awayScore ?? "").then((value) => int.tryParse(value ?? "")) : null;
-      homeScore = box.source.homeScore?.isNotEmpty == true ? await sock?.inputs.getText(box.source.homeScore ?? "").then((value) => int.tryParse(value ?? "")) : null;
-      downs = box.source.downs?.isNotEmpty == true ? await sock?.inputs.getText(box.source.downs ?? "") : null;
-      quarter = box.source.quarter?.isNotEmpty == true ? await sock?.inputs.getText(box.source.quarter ?? "") : null;
-      final clockString = box.source.clock?.isNotEmpty == true ? await sock?.inputs.getText(box.source.clock ?? "") : null;
-      if (clockString != null) {
-        final split = clockString.split(":");
-        if (split.length == 2) {
-          clock = GameClockState(int.tryParse(split[0]) ?? 0, int.tryParse(split[1]) ?? 0);
-        }
-      }
-    } catch(e) {
-      if (kDebugMode) {
-        print(e);
-      }
-      return;
-    }
-    ref.controller.state = ref.controller.state.copyWith(
-      clock: clock ?? gameState.clock,
-      awayScore: awayScore ?? gameState.awayScore,
-      homeScore: homeScore ?? gameState.homeScore,
-      downs: downs ?? gameState.downs,
-      quarter: quarter ?? gameState.quarter,
-    );
-  });
-  try {
-    return ref.controller.state;
-  } catch (e) {
-    return const GameState();
+    return;
   }
+  int? awayScore;
+  int? homeScore;
+  String? downs;
+  String? quarter;
+  GameClockState? clock;
+  try {
+    awayScore = box.source.awayScore?.isNotEmpty == true ? await sock.inputs.getText(box.source.awayScore ?? "").then((value) => int.parse(value ?? "-1")).catchError((e) => 88) : null;
+    homeScore = box.source.homeScore?.isNotEmpty == true ? await sock.inputs.getText(box.source.homeScore ?? "").then((value) => int.parse(value ?? "-1")).catchError((e) => 0) : null;
+    downs = box.source.downs?.isNotEmpty == true ? await sock.inputs.getText(box.source.downs ?? "--").catchError((e) => "") : null;
+    quarter = box.source.quarter?.isNotEmpty == true ? await sock.inputs.getText(box.source.quarter ?? "--").catchError((e) => "") : null;
+    final clockString = box.source.clock?.isNotEmpty == true ? await sock.inputs.getText(box.source.clock ?? "-1:-1").catchError((e) => "") : null;
+    if (clockString != null) {
+      final split = clockString.split(":");
+      if (split.length == 2) {
+        clock = GameClockState(int.tryParse(split[0]) ?? 0, int.tryParse(split[1]) ?? 0);
+      }
+    }
+  } catch(e) {
+    if (kDebugMode) {
+      print(e);
+    }
+    return;
+  }
+  GameState state = GameState();
+  // yield GameState(
+  //   clock: clock ?? defaults.clock,
+  //   awayScore: awayScore ?? defaults.awayScore,
+  //   homeScore: homeScore ?? defaults.homeScore,
+  //   downs: downs ?? defaults.downs,
+  //   quarter: quarter ?? defaults.quarter,
+  // );
+  if (awayScore != null) state = state.copyWith(awayScore: awayScore);
+  if (homeScore != null) state = state.copyWith(homeScore: homeScore);
+  if (downs != null) state = state.copyWith(downs: downs);
+  if (quarter != null) state = state.copyWith(quarter: quarter);
+  if (clock != null) state = state.copyWith(clock: clock);
+  yield state;
+  return;
+});
+
+refreshGameState(ref) => ref.refresh(_gameStateProvider);
+
+var _lastGameState = const GameState(clock: GameClockState(43, 21));
+
+final gameStateProvider = Provider<GameState>((ref) {
+  return ref.watch(_gameStateProvider).map<GameState>(
+    data: (data) {
+      _lastGameState = data.value;
+      return data.value;
+    },
+    error: (e) {
+      gameStateLogger.error("Error in game state", e.error);
+      return const GameState();
+    },
+    loading: (_) => _lastGameState,
+  );
 });
 
 class HomeView extends ConsumerWidget {
@@ -80,19 +100,47 @@ class HomeView extends ConsumerWidget {
       appBar: AppBar(
         title: const Text("OBS Scorer Client"),
         actions: [
-          Tooltip(
-            message: "Settings",
-            child: IconButton(
-              icon: const Icon(Icons.settings),
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsView()));
-              }
-            ),
-          )
+          // refresh button with tooltip
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            tooltip: "Refresh",
+            onPressed: () {
+              ref.refresh(_gameStateProvider);
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: "Settings",
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsView()));
+            }
+          ),
         ],
       ),
       body: Column(
         children: [
+          Consumer(builder: ((context, ref, child) {
+            ref.listen(socketProvider, (previous, next) {
+              next.maybeWhen(
+                orElse: () {},
+                error: (error, stackTrace) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(error.toString()),
+                    duration: const Duration(seconds: 60),
+                    action: SnackBarAction(
+                      label: "Reconnect",
+                      onPressed: () {
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                        ref.refresh(socketProvider);
+                      },
+                    ),
+                  ));
+                }
+              );
+            });
+
+            return Container();
+          })),
           const Center(child: Padding(padding: EdgeInsets.all(16.0), child: GameStateSummaryWidget())),
           Wrap(
             children: [
@@ -108,6 +156,21 @@ class HomeView extends ConsumerWidget {
               ),
             ],
           ),
+          // Wrap(
+          //   children: [
+          //     ScoreEditorCard(
+          //       title: "Away Score",
+          //       score: gameState.awayScore,
+          //       setting: SourceSetting.awayScore,
+          //     ),
+          //     ScoreEditorCard(
+          //       title: "Home Score",
+          //       score: gameState.homeScore,
+          //       setting: SourceSetting.homeScore,
+          //     ),
+          //   ],
+          // ),
+          ClockEditorCard(clock: gameState.clock),
         ],
       ),
     );

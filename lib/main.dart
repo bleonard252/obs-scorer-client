@@ -61,6 +61,6 @@ extension InputSettings on Inputs {
     final response = await obsWebSocket.send("GetInputSettings", {
       "inputName": inputName,
     });
-    return response?.responseData?["text"];
+    return response?.responseData?["inputSettings"]["text"];
   }
 }

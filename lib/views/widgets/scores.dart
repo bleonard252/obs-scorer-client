@@ -11,8 +11,6 @@ class ScoreEditorCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    //final gameState = ref.watch(gameStateProvider);
-    // gonna need the socket provider here to change the score
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
@@ -24,10 +22,10 @@ class ScoreEditorCard extends ConsumerWidget {
               Text(title, style: Theme.of(context).textTheme.headline6),
               const SizedBox(height: 16),
               Wrap(children: [
-                IconButton(onPressed: () => modScore(ref, -6), icon: const Text("-6")),
-                IconButton(onPressed: () => modScore(ref, -3), icon: const Text("-3")),
-                IconButton(onPressed: () => modScore(ref, -2), icon: const Text("-2")),
-                IconButton(onPressed: () => modScore(ref, -1), icon: const Text("-1")),
+                IconButton(onPressed: () => modScore(ref, -6), icon: const Text("-6", style: TextStyle(color: Colors.red))),
+                IconButton(onPressed: () => modScore(ref, -3), icon: const Text("-3", style: TextStyle(color: Colors.red))),
+                IconButton(onPressed: () => modScore(ref, -2), icon: const Text("-2", style: TextStyle(color: Colors.red))),
+                IconButton(onPressed: () => modScore(ref, -1), icon: const Text("-1", style: TextStyle(color: Colors.red))),
                 SizedBox(
                   width: 64,
                   child: TextField(
@@ -47,10 +45,10 @@ class ScoreEditorCard extends ConsumerWidget {
                     controller: TextEditingController(text: score.toString()),
                   ),
                 ),
-                IconButton(onPressed: () => modScore(ref, 1), icon: const Text("+1")),
-                IconButton(onPressed: () => modScore(ref, 2), icon: const Text("+2")),
-                IconButton(onPressed: () => modScore(ref, 3), icon: const Text("+3")),
-                IconButton(onPressed: () => modScore(ref, 6), icon: const Text("+6")),
+                IconButton(onPressed: () => modScore(ref, 1), icon: const Text("+1", style: TextStyle(color: Colors.green))),
+                IconButton(onPressed: () => modScore(ref, 2), icon: const Text("+2", style: TextStyle(color: Colors.green))),
+                IconButton(onPressed: () => modScore(ref, 3), icon: const Text("+3", style: TextStyle(color: Colors.green))),
+                IconButton(onPressed: () => modScore(ref, 6), icon: const Text("+6", style: TextStyle(color: Colors.green))),
               ]),
             ],
           ),
@@ -66,7 +64,7 @@ class ScoreEditorCard extends ConsumerWidget {
       return;
     }
     await (ref.read(socketProvider).value?.inputs.setText(source, value.toString()) ?? Future.value());
-    ref.refresh(gameStateProvider);
+    refreshGameState(ref);
     return;
   }
 }

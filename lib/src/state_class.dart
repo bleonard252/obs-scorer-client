@@ -21,8 +21,16 @@ class GameClockState {
   final int minutes;
   final int seconds;
   const GameClockState(this.minutes, this.seconds);
+
+  const GameClockState.fromSeconds(int seconds)
+      : minutes = seconds ~/ 60,
+        seconds = seconds % 60;
   @override
   String toString() {
     return "$minutes:${seconds.toString().padLeft(2, "0")}";
+  }
+
+  int toSeconds() {
+    return (minutes * 60) + seconds;
   }
 }
