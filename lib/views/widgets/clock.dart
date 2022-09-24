@@ -10,7 +10,8 @@ import 'package:obs_scorer_client/src/settings.dart';
 
 class ClockEditorCard extends ConsumerStatefulWidget {
   final GameClockState clock;
-  const ClockEditorCard({Key? key, required this.clock}) : super(key: key);
+  final String quarter;
+  const ClockEditorCard({Key? key, required this.clock, this.quarter = "OT"}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
@@ -51,6 +52,12 @@ class _ClockEditorCardState extends ConsumerState<ClockEditorCard> {
 
   @override
   Widget build(BuildContext context) {
+    final qtrOffStyle = TextButton.styleFrom(
+      foregroundColor: Theme.of(context).textTheme.bodyText1?.color,
+    );
+    final qtrOnStyle = OutlinedButton.styleFrom(
+      foregroundColor: Theme.of(context).colorScheme.primary,
+    );
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
@@ -65,6 +72,22 @@ class _ClockEditorCardState extends ConsumerState<ClockEditorCard> {
               //   value: timer.isActive ? widget.clock.toSeconds() / 60 : 0,
               //   valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
               // ),
+              Wrap(
+                //alignment: WrapAlignment.center,
+                children: [
+                  if (parseQuarter(widget.quarter) == 1) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("1st"))
+                  else TextButton(onPressed: () => setQuarter(1), style: qtrOffStyle, child: const Text("1st")),
+                  if (parseQuarter(widget.quarter) == 2) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("2nd"))
+                  else TextButton(onPressed: () => setQuarter(2), style: qtrOffStyle, child: const Text("2nd")),
+                  if (parseQuarter(widget.quarter) == 3) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("3rd"))
+                  else TextButton(onPressed: () => setQuarter(3), style: qtrOffStyle, child: const Text("3rd")),
+                  if (parseQuarter(widget.quarter) == 4) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("4th"))
+                  else TextButton(onPressed: () => setQuarter(4), style: qtrOffStyle, child: const Text("4th")),
+                  if (parseQuarter(widget.quarter) == 5) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("OT"))
+                  else TextButton(onPressed: () => setQuarter(5), style: qtrOffStyle, child: const Text("OT")),
+                ],
+              ),
+              const SizedBox(height: 16),
               Wrap(
                 crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
@@ -142,6 +165,38 @@ class _ClockEditorCardState extends ConsumerState<ClockEditorCard> {
     await (ref.read(socketProvider).value?.inputs.setText(source, GameClockState.fromSeconds(seconds).toString()) ?? Future.value());
     refreshGameState(ref);
     return;
+  }
+
+  Future<void> setQuarter(int quarter) async {
+    final source = ref.read<Box>(settingsProvider).source.quarter;
+    if (source == null) {
+      return;
+    }
+    late String value;
+    switch (quarter) {
+      case 1: value = "1st"; break;
+      case 2: value = "2nd"; break;
+      case 3: value = "3rd"; break;
+      case 4: value = "4th"; break;
+      case 5: value = "OT"; break;
+      default: value = "--"; break;
+    }
+    if (ref.read<Box>(settingsProvider).behavior.uppercaseQuarter ?? false) {
+      value = value.toUpperCase();
+    }
+    await (ref.read(socketProvider).value?.inputs.setText(source, value) ?? Future.value());
+    refreshGameState(ref);
+    return;
+  }
+
+  /// Possible values for quarter are `1`, `2`, `3`, `4`, and `5` (OT),
+  /// or `0` if parsing failed.
+  int parseQuarter(String quarter) {
+    if (quarter.toLowerCase() == "ot") {
+      return 5;
+    } else {
+      return int.tryParse(quarter.substring(0, 1)) ?? 0;
+    }
   }
 
   void showLongPress(BuildContext context) => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Long press presets to reset the clock.")));

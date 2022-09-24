@@ -170,7 +170,7 @@ class HomeView extends ConsumerWidget {
           //     ),
           //   ],
           // ),
-          ClockEditorCard(clock: gameState.clock),
+          ClockEditorCard(clock: gameState.clock, quarter: gameState.quarter),
         ],
       ),
     );
