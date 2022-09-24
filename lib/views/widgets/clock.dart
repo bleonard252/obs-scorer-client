@@ -9,9 +9,7 @@ import 'package:obs_scorer_client/views/home.dart';
 import 'package:obs_scorer_client/src/settings.dart';
 
 class ClockEditorCard extends ConsumerStatefulWidget {
-  final GameClockState clock;
-  final String quarter;
-  const ClockEditorCard({Key? key, required this.clock, this.quarter = "OT"}) : super(key: key);
+  const ClockEditorCard({Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
@@ -20,6 +18,9 @@ class ClockEditorCard extends ConsumerStatefulWidget {
 
 class _ClockEditorCardState extends ConsumerState<ClockEditorCard> {
   Timer timer = Timer(Duration.zero, () {});
+  late GameClockState clock;
+  late String quarter;
+
   @override
   void initState() {
     super.initState();
@@ -35,7 +36,7 @@ class _ClockEditorCardState extends ConsumerState<ClockEditorCard> {
     timer.cancel();
     setState(() {});
     timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (widget.clock.toSeconds() == 1) {
+      if (clock.toSeconds() == 1) {
         setState(() {
           timer.cancel();
         });
@@ -58,6 +59,9 @@ class _ClockEditorCardState extends ConsumerState<ClockEditorCard> {
     final qtrOnStyle = OutlinedButton.styleFrom(
       foregroundColor: Theme.of(context).colorScheme.primary,
     );
+    final _state = ref.watch(gameStateProvider);
+    clock = _state.clock;
+    quarter = _state.quarter;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Card(
@@ -75,15 +79,15 @@ class _ClockEditorCardState extends ConsumerState<ClockEditorCard> {
               Wrap(
                 //alignment: WrapAlignment.center,
                 children: [
-                  if (parseQuarter(widget.quarter) == 1) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("1st"))
+                  if (parseQuarter(quarter) == 1) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("1st"))
                   else TextButton(onPressed: () => setQuarter(1), style: qtrOffStyle, child: const Text("1st")),
-                  if (parseQuarter(widget.quarter) == 2) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("2nd"))
+                  if (parseQuarter(quarter) == 2) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("2nd"))
                   else TextButton(onPressed: () => setQuarter(2), style: qtrOffStyle, child: const Text("2nd")),
-                  if (parseQuarter(widget.quarter) == 3) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("3rd"))
+                  if (parseQuarter(quarter) == 3) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("3rd"))
                   else TextButton(onPressed: () => setQuarter(3), style: qtrOffStyle, child: const Text("3rd")),
-                  if (parseQuarter(widget.quarter) == 4) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("4th"))
+                  if (parseQuarter(quarter) == 4) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("4th"))
                   else TextButton(onPressed: () => setQuarter(4), style: qtrOffStyle, child: const Text("4th")),
-                  if (parseQuarter(widget.quarter) == 5) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("OT"))
+                  if (parseQuarter(quarter) == 5) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("OT"))
                   else TextButton(onPressed: () => setQuarter(5), style: qtrOffStyle, child: const Text("OT")),
                 ],
               ),
@@ -122,7 +126,7 @@ class _ClockEditorCardState extends ConsumerState<ClockEditorCard> {
                           setClock(int.parse(split[1]), int.parse(split[0]));
                         }
                       },
-                      controller: TextEditingController(text: widget.clock.toString()),
+                      controller: TextEditingController(text: clock.toString()),
                     ),
                   ),
                   TextButton(onPressed: () => modSeconds(1), style: TextButton.styleFrom(foregroundColor: Colors.green), child: const Text("+1")),
@@ -133,10 +137,10 @@ class _ClockEditorCardState extends ConsumerState<ClockEditorCard> {
               ),
               Wrap(
                 children: [
-                  TextButton(onPressed: () => setClock(GameClockState(widget.clock.minutes, 0).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":00")),
-                  TextButton(onPressed: () => setClock(GameClockState(widget.clock.minutes, 15).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":15")),
-                  TextButton(onPressed: () => setClock(GameClockState(widget.clock.minutes, 30).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":30")),
-                  TextButton(onPressed: () => setClock(GameClockState(widget.clock.minutes, 45).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":45")),
+                  TextButton(onPressed: () => setClock(GameClockState(clock.minutes, 0).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":00")),
+                  TextButton(onPressed: () => setClock(GameClockState(clock.minutes, 15).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":15")),
+                  TextButton(onPressed: () => setClock(GameClockState(clock.minutes, 30).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":30")),
+                  TextButton(onPressed: () => setClock(GameClockState(clock.minutes, 45).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":45")),
                 ],
               ),
               Wrap(
@@ -155,7 +159,7 @@ class _ClockEditorCardState extends ConsumerState<ClockEditorCard> {
     );
   }
 
-  Future<void> modSeconds(int amount) => setClock(widget.clock.toSeconds() + amount);
+  Future<void> modSeconds(int amount) => setClock(clock.toSeconds() + amount);
   Future<void> setClock(int seconds, [int minutes = 0]) async {
     final source = ref.read<Box>(settingsProvider).source.clock;
     if (source == null) {

@@ -7,6 +7,7 @@ import 'package:obs_scorer_client/src/settings.dart';
 import 'package:obs_scorer_client/src/state_class.dart';
 import 'package:obs_scorer_client/views/settings.dart';
 import 'package:obs_scorer_client/views/widgets/clock.dart';
+import 'package:obs_scorer_client/views/widgets/downs.dart';
 import 'package:obs_scorer_client/views/widgets/scores.dart';
 import 'package:obs_scorer_client/views/widgets/summary.dart';
 import 'package:obs_websocket/obs_websocket.dart';
@@ -117,61 +118,64 @@ class HomeView extends ConsumerWidget {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Consumer(builder: ((context, ref, child) {
-            ref.listen(socketProvider, (previous, next) {
-              next.maybeWhen(
-                orElse: () {},
-                error: (error, stackTrace) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(error.toString()),
-                    duration: const Duration(seconds: 60),
-                    action: SnackBarAction(
-                      label: "Reconnect",
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                        ref.refresh(socketProvider);
-                      },
-                    ),
-                  ));
-                }
-              );
-            });
-
-            return Container();
-          })),
-          const Center(child: Padding(padding: EdgeInsets.all(16.0), child: GameStateSummaryWidget())),
-          Wrap(
-            children: [
-              ScoreEditorCard(
-                title: "Away Score",
-                score: gameState.awayScore,
-                setting: SourceSetting.awayScore,
-              ),
-              ScoreEditorCard(
-                title: "Home Score",
-                score: gameState.homeScore,
-                setting: SourceSetting.homeScore,
-              ),
-            ],
-          ),
-          // Wrap(
-          //   children: [
-          //     ScoreEditorCard(
-          //       title: "Away Score",
-          //       score: gameState.awayScore,
-          //       setting: SourceSetting.awayScore,
-          //     ),
-          //     ScoreEditorCard(
-          //       title: "Home Score",
-          //       score: gameState.homeScore,
-          //       setting: SourceSetting.homeScore,
-          //     ),
-          //   ],
-          // ),
-          ClockEditorCard(clock: gameState.clock, quarter: gameState.quarter),
-        ],
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Consumer(builder: ((context, ref, child) {
+              ref.listen(socketProvider, (previous, next) {
+                next.maybeWhen(
+                  orElse: () {},
+                  error: (error, stackTrace) {
+                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                      content: Text(error.toString()),
+                      duration: const Duration(seconds: 60),
+                      action: SnackBarAction(
+                        label: "Reconnect",
+                        onPressed: () {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          ref.refresh(socketProvider);
+                        },
+                      ),
+                    ));
+                  }
+                );
+              });
+      
+              return Container();
+            })),
+            const Center(child: Padding(padding: EdgeInsets.all(16.0), child: GameStateSummaryWidget())),
+            Wrap(
+              children: [
+                ScoreEditorCard(
+                  title: "Away Score",
+                  score: gameState.awayScore,
+                  setting: SourceSetting.awayScore,
+                ),
+                ScoreEditorCard(
+                  title: "Home Score",
+                  score: gameState.homeScore,
+                  setting: SourceSetting.homeScore,
+                ),
+              ],
+            ),
+            // Wrap(
+            //   children: [
+            //     ScoreEditorCard(
+            //       title: "Away Score",
+            //       score: gameState.awayScore,
+            //       setting: SourceSetting.awayScore,
+            //     ),
+            //     ScoreEditorCard(
+            //       title: "Home Score",
+            //       score: gameState.homeScore,
+            //       setting: SourceSetting.homeScore,
+            //     ),
+            //   ],
+            // ),
+            const ClockEditorCard(),
+            const DownsAndDistanceEditorCard(),
+          ],
+        ),
       ),
     );
   }
