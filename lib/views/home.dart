@@ -11,6 +11,7 @@ import 'package:obs_scorer_client/views/widgets/clock.dart';
 import 'package:obs_scorer_client/views/widgets/downs.dart';
 import 'package:obs_scorer_client/views/widgets/scores.dart';
 import 'package:obs_scorer_client/views/widgets/summary.dart';
+import 'package:obs_scorer_client/views/widgets/timeouts.dart';
 import 'package:obs_websocket/obs_websocket.dart';
 
 final socketProvider = FutureProvider<ObsWebSocket>((ref) async {
@@ -43,6 +44,8 @@ final _gameStateProvider = StreamProvider<GameState>((ref) async* {
   String? downs;
   String? quarter;
   GameClockState? clock;
+  int? awayTimeouts;
+  int? homeTimeouts;
   try {
     awayScore = box.source.awayScore?.isNotEmpty == true ? await sock.inputs.getText(box.source.awayScore ?? "").then((value) => int.parse(value ?? "-1")).catchError((e) => 88) : null;
     homeScore = box.source.homeScore?.isNotEmpty == true ? await sock.inputs.getText(box.source.homeScore ?? "").then((value) => int.parse(value ?? "-1")).catchError((e) => 0) : null;
@@ -54,6 +57,18 @@ final _gameStateProvider = StreamProvider<GameState>((ref) async* {
       if (split.length == 2) {
         clock = GameClockState(int.tryParse(split[0]) ?? 0, int.tryParse(split[1]) ?? 0);
       }
+    }
+    if (box.source.awayTimeoutsPrefix?.isNotEmpty == true) {
+      awayTimeouts = 0;
+      if (await sock.sceneItems.getVisible("${box.source.awayTimeoutsPrefix ?? ""}1").catchError((e) => false) == true) awayTimeouts++;
+      if (await sock.sceneItems.getVisible("${box.source.awayTimeoutsPrefix ?? ""}2").catchError((e) => false) == true) awayTimeouts++;
+      if (await sock.sceneItems.getVisible("${box.source.awayTimeoutsPrefix ?? ""}3").catchError((e) => false) == true) awayTimeouts++;
+    }
+    if (box.source.homeTimeoutsPrefix?.isNotEmpty == true) {
+      homeTimeouts = 0;
+      if (await sock.sceneItems.getVisible("${box.source.homeTimeoutsPrefix ?? ""}1").catchError((e) => false) == true) homeTimeouts++;
+      if (await sock.sceneItems.getVisible("${box.source.homeTimeoutsPrefix ?? ""}2").catchError((e) => false) == true) homeTimeouts++;
+      if (await sock.sceneItems.getVisible("${box.source.homeTimeoutsPrefix ?? ""}3").catchError((e) => false) == true) homeTimeouts++;
     }
   } catch(e) {
     if (kDebugMode) {
@@ -74,6 +89,8 @@ final _gameStateProvider = StreamProvider<GameState>((ref) async* {
   if (downs != null) state = state.copyWith(downs: downs);
   if (quarter != null) state = state.copyWith(quarter: quarter);
   if (clock != null) state = state.copyWith(clock: clock);
+  if (awayTimeouts != null) state = state.copyWith(awayTimeouts: awayTimeouts);
+  if (homeTimeouts != null) state = state.copyWith(homeTimeouts: homeTimeouts);
   gameStateLogger.debug("Yielding updated state", error: state);
   yield state;
   return;
@@ -209,20 +226,62 @@ class HomeView extends ConsumerWidget {
                 )
               ],
             ),
-            // Wrap(
-            //   children: [
-            //     ScoreEditorCard(
-            //       title: "Away Score",
-            //       score: gameState.awayScore,
-            //       setting: SourceSetting.awayScore,
-            //     ),
-            //     ScoreEditorCard(
-            //       title: "Home Score",
-            //       score: gameState.homeScore,
-            //       setting: SourceSetting.homeScore,
-            //     ),
-            //   ],
-            // ),
+            if (box.source.awayTimeoutsPrefix?.isEmpty == false || box.source.homeTimeoutsPrefix?.isEmpty == false) Wrap(
+              children: [
+                if (box.source.awayTimeoutsPrefix?.isEmpty == false) TimeoutEditorCard(
+                  title: "Away Timeouts",
+                  timeouts: gameState.awayTimeouts,
+                  setting: SourceSetting.awayTimeoutsPrefix,
+                )
+                else GestureDetector(
+                  onTap: () {
+                    showDialog(context: context, builder: (context) {
+                      return AlertDialog(
+                        title: const Text("Source not set"),
+                        content: const Text("\"Away timeouts prefix\" is not set. Set it by going to Settings, then Away team."),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text("OK"),
+                          ),
+                        ],
+                      );
+                    });
+                  },
+                  child: const TimeoutEditorCard(
+                    title: "Away Timeouts",
+                    setting: "",
+                    disabled: true
+                  ),
+                ),
+                if (box.source.homeTimeoutsPrefix?.isEmpty == false) TimeoutEditorCard(
+                  title: "Home Timeouts",
+                  timeouts: gameState.homeTimeouts,
+                  setting: SourceSetting.homeTimeoutsPrefix,
+                )
+                else GestureDetector(
+                  onTap: () {
+                    showDialog(context: context, builder: (context) {
+                      return AlertDialog(
+                        title: const Text("Source not set"),
+                        content: const Text("\"Home timeouts prefix\" is not set. Set it by going to Settings, then Home team."),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text("OK"),
+                          ),
+                        ],
+                      );
+                    });
+                  },
+                  child: const TimeoutEditorCard(
+                    title: "Home Timeouts",
+                    setting: "",
+                    disabled: true
+                  ),
+                )
+              ],
+            ),
             if (box.source.clock != null || box.source.quarter != null) const ClockEditorCard(),
             if (box.source.downs != null) const DownsAndDistanceEditorCard(),
           ],

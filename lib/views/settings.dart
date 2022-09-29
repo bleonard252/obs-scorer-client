@@ -35,6 +35,10 @@ class _SettingsViewState extends State<SettingsView> {
                   title: "Logo source name (optional)",
                   settingKey: SourceSetting.awayLogo,
                 ),
+                TextInputSettingsTile(
+                  title: "Timeout source name prefix (optional; as-is)",
+                  settingKey: SourceSetting.awayTimeoutsPrefix,
+                ),
               ])
             ),
             SimpleSettingsTile(
@@ -49,6 +53,10 @@ class _SettingsViewState extends State<SettingsView> {
                 TextInputSettingsTile(
                   title: "Logo source name (optional)",
                   settingKey: SourceSetting.homeLogo,
+                ),
+                TextInputSettingsTile(
+                  title: "Timeout source name prefix (optional; as-is)",
+                  settingKey: SourceSetting.homeTimeoutsPrefix,
                 ),
               ])
             ),
