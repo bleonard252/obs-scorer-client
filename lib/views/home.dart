@@ -104,6 +104,7 @@ class HomeView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final gameState = ref.watch(gameStateProvider);
+    final box = ref.watch(settingsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -148,22 +149,64 @@ class HomeView extends ConsumerWidget {
                   }
                 );
               });
-      
+
               return Container();
             })),
             const Center(child: Padding(padding: EdgeInsets.all(16.0), child: GameStateSummaryWidget())),
-            Wrap(
+            if (box.source.awayScore?.isEmpty == false || box.source.homeScore?.isEmpty == false) Wrap(
               children: [
-                ScoreEditorCard(
+                if (box.source.awayScore?.isEmpty == false) ScoreEditorCard(
                   title: "Away Score",
                   score: gameState.awayScore,
                   setting: SourceSetting.awayScore,
+                )
+                else GestureDetector(
+                  onTap: () {
+                    showDialog(context: context, builder: (context) {
+                      return AlertDialog(
+                        title: const Text("Source not set"),
+                        content: const Text("\"Away score\" is not set. Set it by going to Settings, then Away team."),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text("OK"),
+                          ),
+                        ],
+                      );
+                    });
+                  },
+                  child: const ScoreEditorCard(
+                    title: "Away Score",
+                    setting: "",
+                    disabled: true
+                  ),
                 ),
-                ScoreEditorCard(
+                if (box.source.homeScore?.isEmpty == false) ScoreEditorCard(
                   title: "Home Score",
                   score: gameState.homeScore,
                   setting: SourceSetting.homeScore,
-                ),
+                )
+                else GestureDetector(
+                  onTap: () {
+                    showDialog(context: context, builder: (context) {
+                      return AlertDialog(
+                        title: const Text("Source not set"),
+                        content: const Text("\"Home score\" is not set. Set it by going to Settings, then Home team."),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text("OK"),
+                          ),
+                        ],
+                      );
+                    });
+                  },
+                  child: const ScoreEditorCard(
+                    title: "Home Score",
+                    setting: "",
+                    disabled: true
+                  ),
+                )
               ],
             ),
             // Wrap(
@@ -180,8 +223,8 @@ class HomeView extends ConsumerWidget {
             //     ),
             //   ],
             // ),
-            const ClockEditorCard(),
-            const DownsAndDistanceEditorCard(),
+            if (box.source.clock != null || box.source.quarter != null) const ClockEditorCard(),
+            if (box.source.downs != null) const DownsAndDistanceEditorCard(),
           ],
         ),
       ),

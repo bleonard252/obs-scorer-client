@@ -60,6 +60,7 @@ class _ClockEditorCardState extends ConsumerState<ClockEditorCard> {
       foregroundColor: Theme.of(context).colorScheme.primary,
     );
     final _state = ref.watch(gameStateProvider);
+    final box = ref.watch(settingsProvider);
     clock = _state.clock;
     quarter = _state.quarter;
     return Padding(
@@ -76,82 +77,86 @@ class _ClockEditorCardState extends ConsumerState<ClockEditorCard> {
               //   value: timer.isActive ? widget.clock.toSeconds() / 60 : 0,
               //   valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
               // ),
-              Wrap(
-                //alignment: WrapAlignment.center,
-                children: [
-                  if (parseQuarter(quarter) == 1) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("1st"))
-                  else TextButton(onPressed: () => setQuarter(1), style: qtrOffStyle, child: const Text("1st")),
-                  if (parseQuarter(quarter) == 2) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("2nd"))
-                  else TextButton(onPressed: () => setQuarter(2), style: qtrOffStyle, child: const Text("2nd")),
-                  if (parseQuarter(quarter) == 3) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("3rd"))
-                  else TextButton(onPressed: () => setQuarter(3), style: qtrOffStyle, child: const Text("3rd")),
-                  if (parseQuarter(quarter) == 4) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("4th"))
-                  else TextButton(onPressed: () => setQuarter(4), style: qtrOffStyle, child: const Text("4th")),
-                  if (parseQuarter(quarter) == 5) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("OT"))
-                  else TextButton(onPressed: () => setQuarter(5), style: qtrOffStyle, child: const Text("OT")),
-                ],
-              ),
-              const SizedBox(height: 16),
-              Wrap(
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  // style: TextButton.styleFrom(foregroundColor: Colors.green),
-                  TextButton(onPressed: () => modSeconds(-60), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("-60")),
-                  TextButton(onPressed: () => modSeconds(-10), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("-10")),
-                  TextButton(onPressed: () => modSeconds(-5), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("-5")),
-                  TextButton(onPressed: () => modSeconds(-1), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("-1")),
-                  SizedBox(
-                    width: 128,
-                    child: TextField(
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        counterText: ""
+              if (box.source.quarter != null) ...[
+                Wrap(
+                  //alignment: WrapAlignment.center,
+                  children: [
+                    if (parseQuarter(quarter) == 1) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("1st"))
+                    else TextButton(onPressed: () => setQuarter(1), style: qtrOffStyle, child: const Text("1st")),
+                    if (parseQuarter(quarter) == 2) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("2nd"))
+                    else TextButton(onPressed: () => setQuarter(2), style: qtrOffStyle, child: const Text("2nd")),
+                    if (parseQuarter(quarter) == 3) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("3rd"))
+                    else TextButton(onPressed: () => setQuarter(3), style: qtrOffStyle, child: const Text("3rd")),
+                    if (parseQuarter(quarter) == 4) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("4th"))
+                    else TextButton(onPressed: () => setQuarter(4), style: qtrOffStyle, child: const Text("4th")),
+                    if (parseQuarter(quarter) == 5) OutlinedButton(onPressed: () {}, style: qtrOnStyle, child: const Text("OT"))
+                    else TextButton(onPressed: () => setQuarter(5), style: qtrOffStyle, child: const Text("OT")),
+                  ],
+                ),
+                const SizedBox(height: 16),
+              ],
+              if (box.source.clock != null) ...[
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    // style: TextButton.styleFrom(foregroundColor: Colors.green),
+                    TextButton(onPressed: () => modSeconds(-60), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("-60")),
+                    TextButton(onPressed: () => modSeconds(-10), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("-10")),
+                    TextButton(onPressed: () => modSeconds(-5), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("-5")),
+                    TextButton(onPressed: () => modSeconds(-1), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("-1")),
+                    SizedBox(
+                      width: 128,
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          counterText: ""
+                        ),
+                        maxLength: 3,
+                        keyboardType: TextInputType.number,
+                        // onChanged: (value) {
+                        //   ref.state = ref.state.copyWith(awayScore: int.tryParse(value));
+                        // },
+                        onSubmitted: (value) {
+                          // split the string into minutes and seconds
+                          var split = value.split(":");
+                          // if there's no colon, assume it's just seconds
+                          if (split.length == 1) {
+                            if (int.tryParse(split[0]) == null) return;
+                            setClock(int.parse(split[0]));
+                          }
+                          // if there's a colon, assume it's minutes:seconds
+                          else if (split.length == 2) {
+                            if (int.tryParse(split[0]) == null || int.tryParse(split[1]) == null) return;
+                            setClock(int.parse(split[1]), int.parse(split[0]));
+                          }
+                        },
+                        controller: TextEditingController(text: clock.toString()),
                       ),
-                      maxLength: 3,
-                      keyboardType: TextInputType.number,
-                      // onChanged: (value) {
-                      //   ref.state = ref.state.copyWith(awayScore: int.tryParse(value));
-                      // },
-                      onSubmitted: (value) {
-                        // split the string into minutes and seconds
-                        var split = value.split(":");
-                        // if there's no colon, assume it's just seconds
-                        if (split.length == 1) {
-                          if (int.tryParse(split[0]) == null) return;
-                          setClock(int.parse(split[0]));
-                        }
-                        // if there's a colon, assume it's minutes:seconds
-                        else if (split.length == 2) {
-                          if (int.tryParse(split[0]) == null || int.tryParse(split[1]) == null) return;
-                          setClock(int.parse(split[1]), int.parse(split[0]));
-                        }
-                      },
-                      controller: TextEditingController(text: clock.toString()),
                     ),
-                  ),
-                  TextButton(onPressed: () => modSeconds(1), style: TextButton.styleFrom(foregroundColor: Colors.green), child: const Text("+1")),
-                  TextButton(onPressed: () => modSeconds(5), style: TextButton.styleFrom(foregroundColor: Colors.green), child: const Text("+5")),
-                  TextButton(onPressed: () => modSeconds(10), style: TextButton.styleFrom(foregroundColor: Colors.green), child: const Text("+10")),
-                  TextButton(onPressed: () => modSeconds(60), style: TextButton.styleFrom(foregroundColor: Colors.green), child: const Text("+60")),
-                ]
-              ),
-              Wrap(
-                children: [
-                  TextButton(onPressed: () => setClock(GameClockState(clock.minutes, 0).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":00")),
-                  TextButton(onPressed: () => setClock(GameClockState(clock.minutes, 15).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":15")),
-                  TextButton(onPressed: () => setClock(GameClockState(clock.minutes, 30).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":30")),
-                  TextButton(onPressed: () => setClock(GameClockState(clock.minutes, 45).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":45")),
-                ],
-              ),
-              Wrap(
-                children: [
-                  TextButton(onPressed: () => showLongPress(context), onLongPress: () => setClock(const GameClockState(15, 0).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("15:00")),
-                  TextButton(onPressed: () => showLongPress(context), onLongPress: () => setClock(const GameClockState(8, 0).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("8:00")),
-                  TextButton(onPressed: () => showLongPress(context), onLongPress: () => setClock(const GameClockState(0, 0).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("0:00")),
-                ],
-              ),
-              if (timer.isActive) IconButton(onPressed: () => stop(), icon: const Icon(Icons.pause, color: Colors.red))
-              else IconButton(onPressed: () => start(), icon: const Icon(Icons.play_arrow, color: Colors.green)),
+                    TextButton(onPressed: () => modSeconds(1), style: TextButton.styleFrom(foregroundColor: Colors.green), child: const Text("+1")),
+                    TextButton(onPressed: () => modSeconds(5), style: TextButton.styleFrom(foregroundColor: Colors.green), child: const Text("+5")),
+                    TextButton(onPressed: () => modSeconds(10), style: TextButton.styleFrom(foregroundColor: Colors.green), child: const Text("+10")),
+                    TextButton(onPressed: () => modSeconds(60), style: TextButton.styleFrom(foregroundColor: Colors.green), child: const Text("+60")),
+                  ]
+                ),
+                Wrap(
+                  children: [
+                    TextButton(onPressed: () => setClock(GameClockState(clock.minutes, 0).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":00")),
+                    TextButton(onPressed: () => setClock(GameClockState(clock.minutes, 15).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":15")),
+                    TextButton(onPressed: () => setClock(GameClockState(clock.minutes, 30).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":30")),
+                    TextButton(onPressed: () => setClock(GameClockState(clock.minutes, 45).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text(":45")),
+                  ],
+                ),
+                Wrap(
+                  children: [
+                    TextButton(onPressed: () => showLongPress(context), onLongPress: () => setClock(const GameClockState(15, 0).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("15:00")),
+                    TextButton(onPressed: () => showLongPress(context), onLongPress: () => setClock(const GameClockState(8, 0).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("8:00")),
+                    TextButton(onPressed: () => showLongPress(context), onLongPress: () => setClock(const GameClockState(0, 0).toSeconds()), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("0:00")),
+                  ],
+                ),
+                if (timer.isActive) IconButton(onPressed: () => stop(), icon: const Icon(Icons.pause, color: Colors.red))
+                else IconButton(onPressed: () => start(), icon: const Icon(Icons.play_arrow, color: Colors.green)),
+              ],
             ],
           ),
         )
