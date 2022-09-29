@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:loggy/loggy.dart';
 import 'package:obs_scorer_client/main.dart';
+import 'package:obs_scorer_client/src/loggy_to_pinelogger.dart';
 import 'package:obs_scorer_client/src/settings.dart';
 import 'package:obs_scorer_client/src/state_class.dart';
 import 'package:obs_scorer_client/views/settings.dart';
@@ -14,16 +15,21 @@ import 'package:obs_websocket/obs_websocket.dart';
 
 final socketProvider = FutureProvider<ObsWebSocket>((ref) async {
   final box = ref.watch(settingsProvider);
-  final socket = await ObsWebSocket.connect("ws://${box.connection.address ?? "localhost:4455"}", password: box.connection.password);
+  final socket = await ObsWebSocket.connect(
+    "ws://${box.connection.address ?? "localhost:4455"}", password: box.connection.password,
+    logOptions: const LogOptions(LogLevel.all, stackTraceLevel: LogLevel.warning),
+    printer: LoggyToPinelogger(appLogger),
+  );
   ref.onDispose(() {
     socket.close();
   });
   return socket;
 });
 
-final gameStateLogger = Loggy("gameStateProvider");
 final _gameStateProvider = StreamProvider<GameState>((ref) async* {
+  final gameStateLogger = appLogger.child("gameStateProvider");
   //yield const GameState(awayScore: 42);
+  gameStateLogger.debug("Update triggered");
   final box = ref.watch(settingsProvider);
   ObsWebSocket? sock = ref.watch(socketProvider).value;
   if (sock == null) {
@@ -55,7 +61,7 @@ final _gameStateProvider = StreamProvider<GameState>((ref) async* {
     }
     return;
   }
-  GameState state = GameState();
+  GameState state = const GameState();
   // yield GameState(
   //   clock: clock ?? defaults.clock,
   //   awayScore: awayScore ?? defaults.awayScore,
@@ -68,6 +74,7 @@ final _gameStateProvider = StreamProvider<GameState>((ref) async* {
   if (downs != null) state = state.copyWith(downs: downs);
   if (quarter != null) state = state.copyWith(quarter: quarter);
   if (clock != null) state = state.copyWith(clock: clock);
+  gameStateLogger.debug("Yielding updated state", error: state);
   yield state;
   return;
 });
@@ -77,13 +84,14 @@ refreshGameState(ref) => ref.refresh(_gameStateProvider);
 var _lastGameState = const GameState(clock: GameClockState(43, 21));
 
 final gameStateProvider = Provider<GameState>((ref) {
+  final gameStateLogger = appLogger.child("gameStateProvider");
   return ref.watch(_gameStateProvider).map<GameState>(
     data: (data) {
       _lastGameState = data.value;
       return data.value;
     },
     error: (e) {
-      gameStateLogger.error("Error in game state", e.error);
+      gameStateLogger.error("Error in game state", error: e.error);
       return const GameState();
     },
     loading: (_) => _lastGameState,

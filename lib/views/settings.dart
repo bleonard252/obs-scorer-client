@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:hive/hive.dart';
 import 'package:obs_scorer_client/src/settings.dart';
+import 'package:obs_scorer_client/views/logs.dart';
 
 import 'login.dart';
 
@@ -142,6 +143,12 @@ class _SettingsViewState extends State<SettingsView> {
           subtitle: 'View licenses for all used libraries',
           leading: const Icon(Icons.article_outlined),
           child: const LicensePage(),
+        ),
+        SimpleSettingsTile(
+          title: "Logs",
+          subtitle: 'Useful for troubleshooting',
+          leading: const Icon(Icons.code),
+          child: const LogView(),
         ),
         ListTile(
           title: const Text("Log out"),

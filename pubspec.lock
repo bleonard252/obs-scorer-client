@@ -195,13 +195,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
-  flutter_loggy:
-    dependency: "direct main"
-    description:
-      name: flutter_loggy
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.0.1"
   flutter_riverpod:
     dependency: "direct main"
     description:
@@ -443,6 +436,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.11.1"
+  pinelogger:
+    dependency: "direct main"
+    description:
+      path: "../pinelogger/pinelogger"
+      relative: true
+    source: path
+    version: "1.0.0"
+  pinelogger_flutter:
+    dependency: "direct main"
+    description:
+      path: "../pinelogger/pinelogger_flutter"
+      relative: true
+    source: path
+    version: "1.0.0"
   platform:
     dependency: transitive
     description:

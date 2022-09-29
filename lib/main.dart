@@ -6,25 +6,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:hive/hive.dart';
-import 'package:loggy/loggy.dart';
-import 'package:flutter_loggy/flutter_loggy.dart';
 import 'package:obs_scorer_client/src/settings.dart';
 import 'package:obs_scorer_client/src/settings_cache.dart';
 import 'package:obs_scorer_client/views/home.dart';
 import 'package:obs_scorer_client/views/login.dart';
 import 'package:obs_websocket/obs_websocket.dart';
 import 'package:obs_websocket/request.dart';
+import 'package:pinelogger/pinelogger.dart';
+import 'package:pinelogger_flutter/pinelogger_flutter.dart';
 
-void main() async {
+//final logPrinter = StreamPrinter(const PrettyDeveloperPrinter());
+final appLogger = Pinelogger("client", severity: Severity.verbose, printer: flutterLogger);
+
+void main() {
+  // Loggy.initLoggy(
+  //   logPrinter: logPrinter,
+  //   logOptions: const LogOptions(LogLevel.all, stackTraceLevel: LogLevel.warning),
+  //   hierarchicalLogging: true
+  // );
+  appLogger.debug("Starting app");
   WidgetsFlutterBinding.ensureInitialized();
   Hive.init(Directory(".config/obs_scorer_client/").absolute.path);
-  await Settings.init(cacheProvider: HiveSettingsCache("settings"));
-  await Hive.openBox("settings");
-  Loggy.initLoggy(
-    logPrinter: const PrettyDeveloperPrinter(),
-    logOptions: const LogOptions(LogLevel.all, stackTraceLevel: LogLevel.warning)
-  );
-  runApp(const ProviderScope(child: MyApp()));
+  unawaited(Future(() async {
+    await Hive.openBox("settings");
+    await Settings.init(cacheProvider: HiveSettingsCache("settings"));
+    runApp(PineloggerContext(logger: appLogger, child: const ProviderScope(child: MyApp())));
+  }));
 }
 
 final settingsProvider = Provider<Box>((ref) {
@@ -37,7 +44,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       title: 'OBS Scorer Client',
       theme: ThemeData(
