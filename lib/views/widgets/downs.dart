@@ -146,13 +146,11 @@ class _DownsAndDistanceEditorCardState extends ConsumerState<DownsAndDistanceEdi
       return;
     }
     var string = value.toString();
-    if (ref.read<Box>(settingsProvider).behavior.uppercaseQuarter ?? false) {
+    if (ref.read<Box>(settingsProvider).behavior.uppercaseDowns ?? false) {
       string = string.toUpperCase();
     }
     await (ref.read(socketProvider).value?.inputs.setText(source, string) ?? Future.value());
     refreshGameState(ref);
     return;
   }
-
-
 }
