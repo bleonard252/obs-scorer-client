@@ -31,6 +31,11 @@ abstract class SourceSetting {
   /// The name of the source to use to show the current game clock.
   static const clock = "source.clock";
 }
+abstract class SceneSetting {
+  static const flagScene = "scene.flag";
+  static const reviewScene = "scene.review";
+  static const downsScene = "scene.downs";
+}
 abstract class BehaviorSetting {
   /// Whether to hide the downs and distance instead of showing placeholder text.
   /// When `false`, the placeholder text will be shown in the downs and distance
@@ -52,11 +57,11 @@ class _connectionSettings {
   _connectionSettings(this._box);
 
   /// The address to connect to OBS with.
-  String? get address => _box.get(ConnectionSetting.address);
+  String? get address => _box.getEIN(ConnectionSetting.address);
   set address(String? value) => _box.put(ConnectionSetting.address, value);
 
   /// The password to authenticate to OBS with.
-  String? get password => _box.get(ConnectionSetting.password);
+  String? get password => _box.getEIN(ConnectionSetting.password);
   set password(String? value) => _box.put(ConnectionSetting.password, value);
 }
 
@@ -65,52 +70,69 @@ class _sourceSettings {
   _sourceSettings(this._box);
 
   /// The name of the source to use for the home score.
-  String? get homeScore => _box.get(SourceSetting.homeScore);
+  String? get homeScore => _box.getEIN(SourceSetting.homeScore);
   set homeScore(String? value) => _box.put(SourceSetting.homeScore, value);
 
   /// The name of the source to use for the home logo.
-  String? get homeLogo => _box.get(SourceSetting.homeLogo);
+  String? get homeLogo => _box.getEIN(SourceSetting.homeLogo);
   set homeLogo(String? value) => _box.put(SourceSetting.homeLogo, value);
 
   /// The name of the source to use for the away score.
-  String? get awayScore => _box.get(SourceSetting.awayScore);
+  String? get awayScore => _box.getEIN(SourceSetting.awayScore);
   set awayScore(String? value) => _box.put(SourceSetting.awayScore, value);
 
   /// The name of the source to use for the away logo.
-  String? get awayLogo => _box.get(SourceSetting.awayLogo);
+  String? get awayLogo => _box.getEIN(SourceSetting.awayLogo);
   set awayLogo(String? value) => _box.put(SourceSetting.awayLogo, value);
 
   /// The prefix for the sources to use for the home timeouts.
-  String? get homeTimeoutsPrefix => _box.get(SourceSetting.homeTimeoutsPrefix);
+  String? get homeTimeoutsPrefix => _box.getEIN(SourceSetting.homeTimeoutsPrefix);
   set homeTimeoutsPrefix(String? value) => _box.put(SourceSetting.homeTimeoutsPrefix, value);
 
   /// The prefix for the sources to use for the away timeouts.
-  String? get awayTimeoutsPrefix => _box.get(SourceSetting.awayTimeoutsPrefix);
+  String? get awayTimeoutsPrefix => _box.getEIN(SourceSetting.awayTimeoutsPrefix);
   set awayTimeoutsPrefix(String? value) => _box.put(SourceSetting.awayTimeoutsPrefix, value);
 
   /// The name of the source to show when a flag is thrown.
-  String? get flagThrown => _box.get(SourceSetting.flagThrown);
+  String? get flagThrown => _box.getEIN(SourceSetting.flagThrown);
   set flagThrown(String? value) => _box.put(SourceSetting.flagThrown, value);
 
   /// The name of the source to show when a review is called.
-  String? get review => _box.get(SourceSetting.review);
+  String? get review => _box.getEIN(SourceSetting.review);
   set review(String? value) => _box.put(SourceSetting.review, value);
 
   /// The name of the source to use to show the current down and distance.
-  String? get downs => _box.get(SourceSetting.downs);
+  String? get downs => _box.getEIN(SourceSetting.downs);
   set downs(String? value) => _box.put(SourceSetting.downs, value);
 
   /// The name of the source to hide when no downs are known.
-  String? get downsContainer => _box.get(SourceSetting.downsContainer);
+  String? get downsContainer => _box.getEIN(SourceSetting.downsContainer);
   set downsContainer(String? value) => _box.put(SourceSetting.downsContainer, value);
 
   /// The name of the source to use to show the current quarter.
-  String? get quarter => _box.get(SourceSetting.quarter);
+  String? get quarter => _box.getEIN(SourceSetting.quarter);
   set quarter(String? value) => _box.put(SourceSetting.quarter, value);
 
   /// The name of the source to use to show the current game clock.
-  String? get clock => _box.get(SourceSetting.clock);
+  String? get clock => _box.getEIN(SourceSetting.clock);
   set clock(String? value) => _box.put(SourceSetting.clock, value);
+}
+
+class _sceneSettings {
+  final Box _box;
+  _sceneSettings(this._box);
+
+  /// The name of the scene to show when a flag is thrown.
+  String? get flagScene => _box.getEIN(SceneSetting.flagScene);
+  set flagScene(String? value) => _box.put(SceneSetting.flagScene, value);
+
+  /// The name of the scene to show when a review is called.
+  String? get reviewScene => _box.getEIN(SceneSetting.reviewScene);
+  set reviewScene(String? value) => _box.put(SceneSetting.reviewScene, value);
+
+  /// The name of the scene to show when downs are known.
+  String? get downsScene => _box.getEIN(SceneSetting.downsScene);
+  set downsScene(String? value) => _box.put(SceneSetting.downsScene, value);
 }
 
 class _behaviorSettings {
@@ -120,24 +142,24 @@ class _behaviorSettings {
   /// Whether to hide the downs and distance instead of showing placeholder text.
   /// When `false`, the placeholder text will be shown in the downs and distance
   /// source.
-  bool? get hideDownsWhenNone => _box.get(BehaviorSetting.hideDownsWhenNone);
+  bool? get hideDownsWhenNone => _box.getEIN(BehaviorSetting.hideDownsWhenNone);
   set hideDownsWhenNone(bool? value) => _box.put(BehaviorSetting.hideDownsWhenNone, value);
 
   /// The placeholder text to show when no downs and distance are known.
-  String? get textWhenNoDowns => _box.get(BehaviorSetting.textWhenNoDowns);
+  String? get textWhenNoDowns => _box.getEIN(BehaviorSetting.textWhenNoDowns);
   set textWhenNoDowns(String? value) => _box.put(BehaviorSetting.textWhenNoDowns, value);
 
   /// Whether to uppercase the quarter text (i.e. "1st" -> "1ST").
-  bool? get uppercaseQuarter => _box.get(BehaviorSetting.uppercaseQuarter);
+  bool? get uppercaseQuarter => _box.getEIN(BehaviorSetting.uppercaseQuarter);
   set uppercaseQuarter(bool? value) => _box.put(BehaviorSetting.uppercaseQuarter, value);
 
   /// Whether to show an "&" between the down and distance (i.e. "1st & 10").
   /// When `false`, the down and distance will be shown as "1st and 10".
-  bool? get ampersandDowns => _box.get(BehaviorSetting.ampersandDowns);
+  bool? get ampersandDowns => _box.getEIN(BehaviorSetting.ampersandDowns);
   set ampersandDowns(bool? value) => _box.put(BehaviorSetting.ampersandDowns, value);
 
   /// Whether to uppercase the downs text (i.e. "1st and 10" -> "1ST AND 10").
-  bool? get uppercaseDowns => _box.get(BehaviorSetting.uppercaseDowns);
+  bool? get uppercaseDowns => _box.getEIN(BehaviorSetting.uppercaseDowns);
   set uppercaseDowns(bool? value) => _box.put(BehaviorSetting.uppercaseDowns, value);
 }
 
@@ -147,5 +169,16 @@ extension ExtendedSettings on Box {
   // ignore: library_private_types_in_public_api
   _sourceSettings get source => _sourceSettings(this);
   // ignore: library_private_types_in_public_api
+  _sceneSettings get scene => _sceneSettings(this);
+  // ignore: library_private_types_in_public_api
   _behaviorSettings get behavior => _behaviorSettings(this);
+
+  /// [get] but where empty is null.
+  T? getEIN<T>(String key, {T? defaultValue}) {
+    final value = get(key);
+    if (value == null || value == "" || value == List.empty() || value == Map.identity()) {
+      return defaultValue;
+    }
+    return value;
+  }
 }

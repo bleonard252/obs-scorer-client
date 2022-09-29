@@ -96,6 +96,12 @@ class _DownsAndDistanceEditorCardState extends ConsumerState<DownsAndDistanceEdi
                 IconButton(onPressed: () => modDistance(5), icon: const Text("+5", style: TextStyle(color: Colors.green))),
                 IconButton(onPressed: () => modDistance(10), icon: const Text("+10", style: TextStyle(color: Colors.green))),
               ]),
+              Wrap(
+                children: [
+                  TextButton(onPressed: () => setDownsAndDistance(DownsState(_downsState.down, -1, "& Goal")), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text("& Goal")),
+                  TextButton(onPressed: () => setDownsAndDistance(DownsState(_downsState.down, -1, "& Inches")), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text("& Inches")),
+                ]
+              ),
               const SizedBox(height: 16),
               Wrap(
                 children: [
@@ -108,8 +114,11 @@ class _DownsAndDistanceEditorCardState extends ConsumerState<DownsAndDistanceEdi
               Wrap(
                 children: [
                   TextButton(onPressed: () => setDownsAndDistance(const DownsState(1, 10, "")), style: TextButton.styleFrom(foregroundColor: Colors.green), child: const Text("1st & 10")),
-                  TextButton(onPressed: null, style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("Flag")),
-                  TextButton(onPressed: null, style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("Review")),
+                  TextButton(onPressed: () => throwFlag(), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("Flag")),
+                  TextButton(onPressed: () => callReview(), style: TextButton.styleFrom(foregroundColor: Colors.red), child: const Text("Review")),
+                  Tooltip(message: "Clear flag and review", child: TextButton(onPressed: () {throwFlag(false, false); callReview(false, false);}, style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text("No F/R"))),
+                  Tooltip(message: "Unknown yardage", child: TextButton(onPressed: null, style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text("Unk yds"))),
+                  Tooltip(message: "Hide downs or show placeholder, depending on configuration", child: TextButton(onPressed: () => basic(), style: TextButton.styleFrom(foregroundColor: Colors.blue), child: const Text("Basic"))),
                 ],
               ),
             ],
@@ -117,6 +126,30 @@ class _DownsAndDistanceEditorCardState extends ConsumerState<DownsAndDistanceEdi
         )
       )
     );
+  }
+
+  Future<void> throwFlag([bool value = true, bool reset = true]) async {
+    if (reset) callReview(false, false);
+    final box = ref.read<Box>(settingsProvider);
+    if (box.source.flagThrown == null || box.source.flagThrown!.isEmpty) return;
+    await ref.read(socketProvider).value?.sceneItems.setVisible(box.source.flagThrown!, value, box.scene.flagScene ?? box.scene.downsScene);
+  }
+  Future<void> callReview([bool value = true, bool reset = true]) async {
+    if (reset) throwFlag(false, false);
+    final box = ref.read(settingsProvider);
+    if (box.source.review == null || box.source.review!.isEmpty) return;
+    await ref.read(socketProvider).value?.sceneItems.setVisible(box.source.review!, value, box.scene.reviewScene ?? box.scene.flagScene ?? box.scene.downsScene);
+  }
+
+  Future<void> basic() async {
+    throwFlag(false, false); callReview(false, false);
+    final box = ref.read(settingsProvider);
+    if (box.behavior.hideDownsWhenNone == true) {
+      if (box.source.downsContainer == null || box.source.downs == null) return;
+      await ref.read(socketProvider).value?.sceneItems.setVisible(box.source.downsContainer!, false, box.scene.downsScene);
+    } else {
+      await ref.read(socketProvider).value?.inputs.setText(box.source.downs!, box.behavior.textWhenNoDowns ?? "--");
+    }
   }
 
   Future<void> setDowns(int downs) {
@@ -140,7 +173,11 @@ class _DownsAndDistanceEditorCardState extends ConsumerState<DownsAndDistanceEdi
     }
     return Future.value();
   }
-  Future<void> setDownsAndDistance(DownsState value) async {
+  Future<void> setDownsAndDistance(DownsState value, {bool retractFlags = true}) async {
+    if (retractFlags) {
+      // retract both of these when setting new downs
+      throwFlag(false, false); callReview(false, false);
+    }
     final source = ref.read(settingsProvider).source.downs;
     if (source == null) {
       return;

@@ -1,16 +1,14 @@
-# obs_scorer_client
+# OBS Scorer Client 2.0
 
-A new Flutter project.
+*For the legacy version, see [this branch](https://github.com/bleonard252/obs-scorer-client/tree/old-master/). The old version, compatible with obs-websockets protocol v4, is also available in web builds as [legacy.html](https://bleonard252.github.io/obs-scorer-client/legacy.html).*
 
-## Getting Started
+This version of OBS Scorer Client is a **feature-complete full rewrite** of my original OBS Scorer Client in Flutter.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+OBS Scorer Client can do the following when paired with a recent version of OBS Studio (which comes with obs-websockets built-in, running protocol v5; **\*** indicates a new feature over legacy):
+* Show a convenient summary of the scoreboard front and center.**\***
+* Show, increment**\***, and manually change the home and away scores.
+* Show and set the home and away timeouts.
+* Show, increment, manually change, start, and stop the game clock.
+* Change the quarter/period between 1st, 2nd, 3rd, 4th, and overtime.
+* Football: Change the current downs and distance (i.e. 1st & 10) with handy shortcuts.
+* Configure the source names to use any text sources you provide.

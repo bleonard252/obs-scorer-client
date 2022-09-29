@@ -21,11 +21,11 @@ class _SettingsViewState extends State<SettingsView> {
         SettingsGroup(
           title: "Components",
           children: [
-            ModalSettingsTile(
+            SimpleSettingsTile(
               title: "Away team",
               subtitle: 'Score, logo, timeout sources',
               leading: const Icon(Icons.drive_eta),
-              children: [
+              child: SettingsScreen(title: "Clock", children: [
                 TextInputSettingsTile(
                   title: "Score source name",
                   settingKey: SourceSetting.awayScore,
@@ -34,13 +34,13 @@ class _SettingsViewState extends State<SettingsView> {
                   title: "Logo source name (optional)",
                   settingKey: SourceSetting.awayLogo,
                 ),
-              ]
+              ])
             ),
-            ModalSettingsTile(
+            SimpleSettingsTile(
               title: "Home team",
               subtitle: 'Score, logo, timeout sources',
               leading: const Icon(Icons.home),
-              children: [
+              child: SettingsScreen(title: "Home team", children: [
                 TextInputSettingsTile(
                   title: "Score source name",
                   settingKey: SourceSetting.homeScore,
@@ -49,25 +49,13 @@ class _SettingsViewState extends State<SettingsView> {
                   title: "Logo source name (optional)",
                   settingKey: SourceSetting.homeLogo,
                 ),
-              ]
+              ])
             ),
             SimpleSettingsTile(
-              title: "Time & downs",
-              subtitle: 'Clock and downs information',
+              title: "Clock",
+              subtitle: 'Clock information',
               leading: const Icon(Icons.timer),
-              child: SettingsScreen(title: "Time & downs", children: [
-                TextInputSettingsTile(
-                  title: "Downs source name (text)",
-                  settingKey: SourceSetting.downs,
-                ),
-                TextInputSettingsTile(
-                  title: "Downs container source name (optional)",
-                  settingKey: SourceSetting.downsContainer,
-                ),
-                SwitchSettingsTile(
-                  title: "Uppercase downs (i.e. 1ST & 10)",
-                  settingKey: BehaviorSetting.uppercaseDowns
-                ),
+              child: SettingsScreen(title: "Clock", children: [
                 TextInputSettingsTile(
                   title: "Clock source name",
                   settingKey: SourceSetting.clock,
@@ -78,10 +66,75 @@ class _SettingsViewState extends State<SettingsView> {
                 ),
                 SwitchSettingsTile(
                   title: "Uppercase quarter (i.e. 1ST)",
+                  enabledLabel: '1ST; 2ND; 3RD; 4TH; OT',
+                  disabledLabel: '1st; 2nd; 3rd; 4th; OT',
                   settingKey: BehaviorSetting.uppercaseQuarter
                 )
               ])
             ),
+            SimpleSettingsTile(
+              title: "Downs, flag, review",
+              subtitle: 'Information typically displayed on the "downs" line',
+              leading: const Icon(Icons.flag),
+              child: SettingsScreen(title: "Downs, flag, review", children: [
+                SettingsGroup(title: "Downs", children: [
+                  TextInputSettingsTile(
+                    title: "Downs source name (text)",
+                    settingKey: SourceSetting.downs,
+                  ),
+                  TextInputSettingsTile(
+                    title: "Downs container source name (optional)",
+                    settingKey: SourceSetting.downsContainer,
+                  ),
+                  TextInputSettingsTile(
+                    title: "Downs scene name (defaults to current scene)",
+                    settingKey: SceneSetting.downsScene,
+                  ),
+                  SwitchSettingsTile(
+                    title: "Uppercase downs (i.e. 1ST & 10)",
+                    enabledLabel: '1ST & 10; 2ND DOWN',
+                    disabledLabel: '1st & 10; 2nd Down',
+                    settingKey: BehaviorSetting.uppercaseDowns
+                  ),
+                  SwitchSettingsTile(
+                    title: "Hide downs on Basic",
+                    enabledLabel: 'Downs hidden on Basic',
+                    disabledLabel: 'Downs placeholder text shown on Basic',
+                    settingKey: BehaviorSetting.hideDownsWhenNone,
+                  ),
+                  TextInputSettingsTile(
+                    title: "Downs placeholder text (optional)",
+                    settingKey: BehaviorSetting.textWhenNoDowns,
+                  )
+                ]),
+                SettingsGroup(
+                  title: "Flag",
+                  children: [
+                    TextInputSettingsTile(
+                      title: "Flag source name (text)",
+                      settingKey: SourceSetting.flagThrown,
+                    ),
+                    TextInputSettingsTile(
+                      title: "Flag scene name (defaults to downs scene)",
+                      settingKey: SceneSetting.flagScene,
+                    ),
+                  ],
+                ),
+                SettingsGroup(
+                  title: "Review",
+                  children: [
+                    TextInputSettingsTile(
+                      title: "Review source name (text)",
+                      settingKey: SourceSetting.review,
+                    ),
+                    TextInputSettingsTile(
+                      title: "Review scene name (defaults to flag scene)",
+                      settingKey: SceneSetting.reviewScene,
+                    ),
+                  ],
+                ),
+              ])
+            )
           ],
         ),
         SimpleSettingsTile(
