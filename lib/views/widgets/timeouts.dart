@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:obs_scorer_client/main.dart';
 import 'package:obs_scorer_client/src/settings.dart';
 import 'package:obs_scorer_client/views/home.dart';
+import 'package:pinelogger_flutter/pinelogger_flutter.dart';
 
 class TimeoutEditorCard extends ConsumerWidget {
   final int timeouts;
@@ -25,7 +26,7 @@ class TimeoutEditorCard extends ConsumerWidget {
               Text(title, style: Theme.of(context).textTheme.headline6),
               const SizedBox(height: 16),
               Wrap(children: [
-                IconButton(onPressed: () => callTimeout(ref, 1), icon: const Icon(Icons.chevron_left, color: Colors.red)),
+                IconButton(onPressed: () => callTimeout(ref, context, 1), icon: const Icon(Icons.chevron_left, color: Colors.red)),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Checkbox(value: timeouts >= 1, onChanged: null),
@@ -38,7 +39,7 @@ class TimeoutEditorCard extends ConsumerWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: Checkbox(value: timeouts >= 3, onChanged: null),
                 ),
-                IconButton(onPressed: () => callTimeout(ref, -1), icon: const Icon(Icons.chevron_right, color: Colors.green)),
+                IconButton(onPressed: () => callTimeout(ref, context, -1), icon: const Icon(Icons.chevron_right, color: Colors.green)),
               ]),
             ],
           ),
@@ -47,11 +48,11 @@ class TimeoutEditorCard extends ConsumerWidget {
     );
   }
 
-  Future<void> callTimeout(WidgetRef ref, int amount) {
+  Future<void> callTimeout(WidgetRef ref, BuildContext context, int amount) {
     assert(!disabled);
-    return setTimeouts(ref, timeouts - amount);
+    return setTimeouts(ref, context, timeouts - amount);
   }
-  Future<void> setTimeouts(WidgetRef ref, int value) async {
+  Future<void> setTimeouts(WidgetRef ref, BuildContext context, int value) async {
     assert(!disabled);
     final prefix = ref.read(settingsProvider).get(setting);
     final container = ref.read(settingsProvider).get(sceneSetting);
@@ -68,7 +69,11 @@ class TimeoutEditorCard extends ConsumerWidget {
       } else {
         enabled = false;
       }
-      await (ref.read(socketProvider).value?.sceneItems.setVisible(prefix+(index.toString()), enabled, container) ?? Future.value());
+      try {
+        await (ref.read(socketProvider).value?.sceneItems.setVisible(prefix+(index.toString()), enabled, container) ?? Future.value());
+      } catch (e) {
+        context.logError("Error setting timeout $index to $enabled", error: e);
+      }
     }
     refreshGameState(ref);
     return;

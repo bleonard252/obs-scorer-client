@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:obs_scorer_client/main.dart';
 import 'package:obs_scorer_client/src/settings.dart';
 import 'package:obs_scorer_client/views/home.dart';
+import 'package:pinelogger/pinelogger.dart';
+import 'package:pinelogger_flutter/pinelogger_flutter.dart';
 
 class TopTextCard extends ConsumerStatefulWidget {
   const TopTextCard({super.key});
@@ -13,10 +15,12 @@ class TopTextCard extends ConsumerStatefulWidget {
 
 class _TopTextCardState extends ConsumerState<TopTextCard> {
   final TextEditingController _controller = TextEditingController();
+  late Pinelogger logger;
 
   @override
   Widget build(BuildContext context) {
     final box = ref.watch(settingsProvider);
+    logger = context.logger;
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -90,16 +94,24 @@ class _TopTextCardState extends ConsumerState<TopTextCard> {
     final text = _controller.text;
 
     await clear(false);
-    await ref.read(socketProvider).value?.inputs.setText(textSource, text);
-    await ref.read(socketProvider).value?.sceneItems.setVisible(containerSource, true, containerScene);
+    try {
+      await ref.read(socketProvider).value?.inputs.setText(textSource, text);
+      await ref.read(socketProvider).value?.sceneItems.setVisible(containerSource, true, containerScene);
+    } catch (e) {
+      logger.error("Error sending top text", error: e);
+    }
   }
 
   Future<void> clear([bool clearField = true]) async {
     final box = ref.read(settingsProvider);
-    if (box.source.awayTopTextContainer != null) await ref.read(socketProvider).value?.sceneItems.setVisible(box.source.awayTopTextContainer!, false, box.scene.awayTopTextScene);
-    if (box.source.awayTopTextContainer != null) await ref.read(socketProvider).value?.sceneItems.setVisible(box.source.homeTopTextContainer!, false, box.scene.homeTopTextScene);
-    if (box.source.awayTopTextContainer != null) await ref.read(socketProvider).value?.sceneItems.setVisible(box.source.neutralTopTextContainer!, false, box.scene.neutralTopTextScene);
-    if (box.source.awayTopText != null) await ref.read(socketProvider).value?.inputs.setText(box.source.awayTopText!, '');
+    try {
+      if (box.source.awayTopTextContainer != null) await ref.read(socketProvider).value?.sceneItems.setVisible(box.source.awayTopTextContainer!, false, box.scene.awayTopTextScene);
+      if (box.source.awayTopTextContainer != null) await ref.read(socketProvider).value?.sceneItems.setVisible(box.source.homeTopTextContainer!, false, box.scene.homeTopTextScene);
+      if (box.source.awayTopTextContainer != null) await ref.read(socketProvider).value?.sceneItems.setVisible(box.source.neutralTopTextContainer!, false, box.scene.neutralTopTextScene);
+      if (box.source.awayTopText != null) await ref.read(socketProvider).value?.inputs.setText(box.source.awayTopText!, '');
+    } catch (e) {
+      logger.error("Error clearing top text", error: e);
+    }
     if (clearField) {
       setState(() {
         _controller.clear();

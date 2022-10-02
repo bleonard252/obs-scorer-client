@@ -7,6 +7,8 @@ import 'package:obs_scorer_client/main.dart';
 import 'package:obs_scorer_client/src/state_class.dart';
 import 'package:obs_scorer_client/views/home.dart';
 import 'package:obs_scorer_client/src/settings.dart';
+import 'package:pinelogger/pinelogger.dart';
+import 'package:pinelogger_flutter/pinelogger_flutter.dart';
 
 class ClockEditorCard extends ConsumerStatefulWidget {
   const ClockEditorCard({Key? key}) : super(key: key);
@@ -20,6 +22,7 @@ class _ClockEditorCardState extends ConsumerState<ClockEditorCard> {
   Timer timer = Timer(Duration.zero, () {});
   late GameClockState clock;
   late String quarter;
+  late Pinelogger logger;
 
   @override
   void initState() {
@@ -53,6 +56,7 @@ class _ClockEditorCardState extends ConsumerState<ClockEditorCard> {
 
   @override
   Widget build(BuildContext context) {
+    logger = context.logger;
     final qtrOffStyle = TextButton.styleFrom(
       foregroundColor: Theme.of(context).textTheme.bodyText1?.color,
     );
@@ -171,7 +175,11 @@ class _ClockEditorCardState extends ConsumerState<ClockEditorCard> {
       return;
     }
     seconds = seconds + (minutes * 60);
-    await (ref.read(socketProvider).value?.inputs.setText(source, GameClockState.fromSeconds(seconds).toString()) ?? Future.value());
+    try {
+      await (ref.read(socketProvider).value?.inputs.setText(source, GameClockState.fromSeconds(seconds).toString()) ?? Future.value());
+    } catch (e) {
+      logger.error("Failed to set clock", error: e);
+    }
     refreshGameState(ref);
     return;
   }
@@ -193,7 +201,11 @@ class _ClockEditorCardState extends ConsumerState<ClockEditorCard> {
     if (ref.read<Box>(settingsProvider).behavior.uppercaseQuarter ?? false) {
       value = value.toUpperCase();
     }
-    await (ref.read(socketProvider).value?.inputs.setText(source, value) ?? Future.value());
+    try {
+      await (ref.read(socketProvider).value?.inputs.setText(source, value) ?? Future.value());
+    } catch (e) {
+      logger.error("Failed to set quarter", error: e);
+    }
     refreshGameState(ref);
     return;
   }

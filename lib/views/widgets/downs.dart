@@ -5,6 +5,8 @@ import 'package:obs_scorer_client/main.dart';
 import 'package:obs_scorer_client/src/settings.dart';
 import 'package:obs_scorer_client/src/state_class.dart';
 import 'package:obs_scorer_client/views/home.dart';
+import 'package:pinelogger/pinelogger.dart';
+import 'package:pinelogger_flutter/pinelogger_flutter.dart';
 
 class DownsAndDistanceEditorCard extends ConsumerStatefulWidget {
   const DownsAndDistanceEditorCard({Key? key}) : super(key: key);
@@ -16,6 +18,7 @@ class DownsAndDistanceEditorCard extends ConsumerStatefulWidget {
 
 class _DownsAndDistanceEditorCardState extends ConsumerState<DownsAndDistanceEditorCard> {
   late DownsState _downsState;
+  late Pinelogger logger;
 
   @override
   void initState() {
@@ -31,6 +34,7 @@ class _DownsAndDistanceEditorCardState extends ConsumerState<DownsAndDistanceEdi
 
   @override
   Widget build(BuildContext context) {
+    logger = context.logger;
     final downsOnStyle = TextButton.styleFrom(
       foregroundColor: Theme.of(context).textTheme.bodyText1?.color,
     );
@@ -132,23 +136,35 @@ class _DownsAndDistanceEditorCardState extends ConsumerState<DownsAndDistanceEdi
     if (reset) callReview(false, false);
     final box = ref.read<Box>(settingsProvider);
     if (box.source.flagThrown == null || box.source.flagThrown!.isEmpty) return;
-    await ref.read(socketProvider).value?.sceneItems.setVisible(box.source.flagThrown!, value, box.scene.flagScene ?? box.scene.downsScene);
+    try {
+      await ref.read(socketProvider).value?.sceneItems.setVisible(box.source.flagThrown!, value, box.scene.flagScene ?? box.scene.downsScene);
+    } catch (e) {
+      logger.error("Failed to set flag visibility", error: e);
+    }
   }
   Future<void> callReview([bool value = true, bool reset = true]) async {
     if (reset) throwFlag(false, false);
     final box = ref.read(settingsProvider);
     if (box.source.review == null || box.source.review!.isEmpty) return;
-    await ref.read(socketProvider).value?.sceneItems.setVisible(box.source.review!, value, box.scene.reviewScene ?? box.scene.flagScene ?? box.scene.downsScene);
+    try {
+      await ref.read(socketProvider).value?.sceneItems.setVisible(box.source.review!, value, box.scene.reviewScene ?? box.scene.flagScene ?? box.scene.downsScene);
+    } catch (e) {
+      logger.error("Failed to set review visibility", error: e);
+    }
   }
 
   Future<void> basic() async {
     throwFlag(false, false); callReview(false, false);
     final box = ref.read(settingsProvider);
-    if (box.behavior.hideDownsWhenNone == true) {
-      if (box.source.downsContainer == null || box.source.downs == null) return;
-      await ref.read(socketProvider).value?.sceneItems.setVisible(box.source.downsContainer!, false, box.scene.downsScene);
-    } else {
-      await ref.read(socketProvider).value?.inputs.setText(box.source.downs!, box.behavior.textWhenNoDowns ?? "--");
+    try {
+      if (box.behavior.hideDownsWhenNone == true) {
+        if (box.source.downsContainer == null || box.source.downs == null) return;
+        await ref.read(socketProvider).value?.sceneItems.setVisible(box.source.downsContainer!, false, box.scene.downsScene);
+      } else {
+        await ref.read(socketProvider).value?.inputs.setText(box.source.downs!, box.behavior.textWhenNoDowns ?? "--");
+      }
+    } catch(e) {
+      logger.error("Failed to set basic downs mode", error: e);
     }
   }
 
@@ -186,7 +202,11 @@ class _DownsAndDistanceEditorCardState extends ConsumerState<DownsAndDistanceEdi
     if (ref.read<Box>(settingsProvider).behavior.uppercaseDowns ?? false) {
       string = string.toUpperCase();
     }
-    await (ref.read(socketProvider).value?.inputs.setText(source, string) ?? Future.value());
+    try {
+      await (ref.read(socketProvider).value?.inputs.setText(source, string) ?? Future.value());
+    } catch(e) {
+      logger.error("Failed to set downs/distance to $string", error: e);
+    }
     refreshGameState(ref);
     return;
   }
