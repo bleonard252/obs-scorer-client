@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:obs_scorer_client/main.dart';
+import 'package:obs_scorer_client/src/settings.dart';
 import 'package:obs_scorer_client/views/home.dart';
 
 class TimeoutEditorCard extends ConsumerWidget {
   final int timeouts;
   final String title;
   final String setting;
+  final String sceneSetting;
   final bool disabled;
-  const TimeoutEditorCard({Key? key, this.timeouts = 0, this.title = "Score", required this.setting, this.disabled = false}) : super(key: key);
+  const TimeoutEditorCard({Key? key, this.timeouts = 0, this.title = "Score", required this.setting, required this.sceneSetting, this.disabled = false}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -52,6 +54,7 @@ class TimeoutEditorCard extends ConsumerWidget {
   Future<void> setTimeouts(WidgetRef ref, int value) async {
     assert(!disabled);
     final prefix = ref.read(settingsProvider).get(setting);
+    final container = ref.read(settingsProvider).get(sceneSetting);
     if (prefix == null) {
       return;
     }
@@ -65,7 +68,7 @@ class TimeoutEditorCard extends ConsumerWidget {
       } else {
         enabled = false;
       }
-      await (ref.read(socketProvider).value?.sceneItems.setVisible(prefix+(index.toString()), enabled) ?? Future.value());
+      await (ref.read(socketProvider).value?.sceneItems.setVisible(prefix+(index.toString()), enabled, container) ?? Future.value());
     }
     refreshGameState(ref);
     return;

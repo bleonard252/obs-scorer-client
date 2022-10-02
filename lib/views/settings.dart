@@ -39,6 +39,27 @@ class _SettingsViewState extends State<SettingsView> {
                   title: "Timeout source name prefix (optional; as-is)",
                   settingKey: SourceSetting.awayTimeoutsPrefix,
                 ),
+                TextInputSettingsTile(
+                  title: "Timeout container or scene (defaults to current scene)",
+                  settingKey: SceneSetting.awayTimeouts,
+                ),
+                SettingsGroup(
+                  title: "Top Text",
+                  children: [
+                    TextInputSettingsTile(
+                      title: "Top text source",
+                      settingKey: SourceSetting.awayTopText,
+                    ),
+                    TextInputSettingsTile(
+                      title: "Top text container",
+                      settingKey: SourceSetting.awayTopTextContainer,
+                    ),
+                    TextInputSettingsTile(
+                      title: "Top text container scene",
+                      settingKey: SceneSetting.awayTopTextScene,
+                    ),
+                  ]
+                )
               ])
             ),
             SimpleSettingsTile(
@@ -58,6 +79,27 @@ class _SettingsViewState extends State<SettingsView> {
                   title: "Timeout source name prefix (optional; as-is)",
                   settingKey: SourceSetting.homeTimeoutsPrefix,
                 ),
+                TextInputSettingsTile(
+                  title: "Timeout container or scene (defaults to current scene)",
+                  settingKey: SceneSetting.homeTimeouts,
+                ),
+                SettingsGroup(
+                  title: "Top Text",
+                  children: [
+                    TextInputSettingsTile(
+                      title: "Top text source",
+                      settingKey: SourceSetting.homeTopText,
+                    ),
+                    TextInputSettingsTile(
+                      title: "Top text container",
+                      settingKey: SourceSetting.homeTopTextContainer,
+                    ),
+                    TextInputSettingsTile(
+                      title: "Top text container scene",
+                      settingKey: SceneSetting.homeTopTextScene,
+                    ),
+                  ]
+                )
               ])
             ),
             SimpleSettingsTile(
@@ -124,7 +166,7 @@ class _SettingsViewState extends State<SettingsView> {
                       settingKey: SourceSetting.flagThrown,
                     ),
                     TextInputSettingsTile(
-                      title: "Flag scene name (defaults to downs scene)",
+                      title: "Flag scene/group name (defaults to downs scene)",
                       settingKey: SceneSetting.flagScene,
                     ),
                   ],
@@ -137,11 +179,28 @@ class _SettingsViewState extends State<SettingsView> {
                       settingKey: SourceSetting.review,
                     ),
                     TextInputSettingsTile(
-                      title: "Review scene name (defaults to flag scene)",
+                      title: "Review scene/group name (defaults to flag scene/group)",
                       settingKey: SceneSetting.reviewScene,
                     ),
                   ],
                 ),
+                SettingsGroup(
+                  title: "Neutral Top Text",
+                  children: [
+                    TextInputSettingsTile(
+                      title: "Top text source",
+                      settingKey: SourceSetting.neutralTopText,
+                    ),
+                    TextInputSettingsTile(
+                      title: "Top text container",
+                      settingKey: SourceSetting.neutralTopTextContainer,
+                    ),
+                    TextInputSettingsTile(
+                      title: "Top text container scene",
+                      settingKey: SceneSetting.neutralTopTextScene,
+                    ),
+                  ]
+                )
               ])
             )
           ],

@@ -30,11 +30,22 @@ abstract class SourceSetting {
   static const quarter = "source.quarter";
   /// The name of the source to use to show the current game clock.
   static const clock = "source.clock";
+  static const awayTopText = "source.awayTopText";
+  static const awayTopTextContainer = "source.awayTopTextContainer";
+  static const homeTopText = "source.homeTopText";
+  static const homeTopTextContainer = "source.homeTopTextContainer";
+  static const neutralTopText = "source.neutralTopText";
+  static const neutralTopTextContainer = "source.neutralTopTextContainer";
 }
 abstract class SceneSetting {
   static const flagScene = "scene.flag";
   static const reviewScene = "scene.review";
   static const downsScene = "scene.downs";
+  static const awayTopTextScene = "scene.awayTopText";
+  static const homeTopTextScene = "scene.homeTopText";
+  static const neutralTopTextScene = "scene.neutralTopText";
+  static const awayTimeouts = "scene.awayTimeouts";
+  static const homeTimeouts = "scene.homeTimeouts";
 }
 abstract class BehaviorSetting {
   /// Whether to hide the downs and distance instead of showing placeholder text.
@@ -71,7 +82,6 @@ class _sourceSettings {
 
   /// The name of the source to use for the home score.
   String? get homeScore => _box.getEIN(SourceSetting.homeScore);
-  set homeScore(String? value) => _box.put(SourceSetting.homeScore, value);
 
   /// The name of the source to use for the home logo.
   String? get homeLogo => _box.getEIN(SourceSetting.homeLogo);
@@ -116,6 +126,30 @@ class _sourceSettings {
   /// The name of the source to use to show the current game clock.
   String? get clock => _box.getEIN(SourceSetting.clock);
   set clock(String? value) => _box.put(SourceSetting.clock, value);
+
+  /// The name of the source to use to show the away top text.
+  String? get awayTopText => _box.getEIN(SourceSetting.awayTopText);
+  set awayTopText(String? value) => _box.put(SourceSetting.awayTopText, value);
+
+  /// The name of the container source to use to show and hide the away top text.
+  String? get awayTopTextContainer => _box.getEIN(SourceSetting.awayTopTextContainer);
+  set awayTopTextContainer(String? value) => _box.put(SourceSetting.awayTopTextContainer, value);
+
+  /// The name of the source to use to show the home top text.
+  String? get homeTopText => _box.getEIN(SourceSetting.homeTopText);
+  set homeTopText(String? value) => _box.put(SourceSetting.homeTopText, value);
+
+  /// The name of the container source to use to show and hide the home top text.
+  String? get homeTopTextContainer => _box.getEIN(SourceSetting.homeTopTextContainer);
+  set homeTopTextContainer(String? value) => _box.put(SourceSetting.homeTopTextContainer, value);
+
+  /// The name of the source to use to show the neutral top text.
+  String? get neutralTopText => _box.getEIN(SourceSetting.neutralTopText);
+  set neutralTopText(String? value) => _box.put(SourceSetting.neutralTopText, value);
+
+  /// The name of the container source to use to show and hide the neutral top text.
+  String? get neutralTopTextContainer => _box.getEIN(SourceSetting.neutralTopTextContainer);
+  set neutralTopTextContainer(String? value) => _box.put(SourceSetting.neutralTopTextContainer, value);
 }
 
 class _sceneSettings {
@@ -133,6 +167,24 @@ class _sceneSettings {
   /// The name of the scene to show when downs are known.
   String? get downsScene => _box.getEIN(SceneSetting.downsScene);
   set downsScene(String? value) => _box.put(SceneSetting.downsScene, value);
+
+  /// The name of the scene where the away top text container is.
+  String? get awayTopTextScene => _box.getEIN(SceneSetting.awayTopTextScene);
+  set awayTopTextScene(String? value) => _box.put(SceneSetting.awayTopTextScene, value);
+
+  /// The name of the scene where the home top text container is.
+  String? get homeTopTextScene => _box.getEIN(SceneSetting.homeTopTextScene);
+  set homeTopTextScene(String? value) => _box.put(SceneSetting.homeTopTextScene, value);
+
+  /// The name of the scene where the neutral top text container is.
+  String? get neutralTopTextScene => _box.getEIN(SceneSetting.neutralTopTextScene);
+  set neutralTopTextScene(String? value) => _box.put(SceneSetting.neutralTopTextScene, value);
+
+  String? get homeTimeouts => _box.getEIN(SceneSetting.homeTimeouts);
+  set homeTimeouts(String? value) => _box.put(SceneSetting.homeTimeouts, value);
+
+  String? get awayTimeouts => _box.getEIN(SceneSetting.awayTimeouts);
+  set awayTimeouts(String? value) => _box.put(SceneSetting.awayTimeouts, value);
 }
 
 class _behaviorSettings {

@@ -12,6 +12,7 @@ import 'package:obs_scorer_client/views/widgets/downs.dart';
 import 'package:obs_scorer_client/views/widgets/scores.dart';
 import 'package:obs_scorer_client/views/widgets/summary.dart';
 import 'package:obs_scorer_client/views/widgets/timeouts.dart';
+import 'package:obs_scorer_client/views/widgets/topcard.dart';
 import 'package:obs_websocket/obs_websocket.dart';
 
 final socketProvider = FutureProvider<ObsWebSocket>((ref) async {
@@ -60,20 +61,18 @@ final _gameStateProvider = StreamProvider<GameState>((ref) async* {
     }
     if (box.source.awayTimeoutsPrefix?.isNotEmpty == true) {
       awayTimeouts = 0;
-      if (await sock.sceneItems.getVisible("${box.source.awayTimeoutsPrefix ?? ""}1").catchError((e) => false) == true) awayTimeouts++;
-      if (await sock.sceneItems.getVisible("${box.source.awayTimeoutsPrefix ?? ""}2").catchError((e) => false) == true) awayTimeouts++;
-      if (await sock.sceneItems.getVisible("${box.source.awayTimeoutsPrefix ?? ""}3").catchError((e) => false) == true) awayTimeouts++;
+      if (await sock.sceneItems.getVisible("${box.source.awayTimeoutsPrefix ?? ""}1", box.scene.awayTimeouts).catchError((e) => false) == true) awayTimeouts++;
+      if (await sock.sceneItems.getVisible("${box.source.awayTimeoutsPrefix ?? ""}2", box.scene.awayTimeouts).catchError((e) => false) == true) awayTimeouts++;
+      if (await sock.sceneItems.getVisible("${box.source.awayTimeoutsPrefix ?? ""}3", box.scene.awayTimeouts).catchError((e) => false) == true) awayTimeouts++;
     }
     if (box.source.homeTimeoutsPrefix?.isNotEmpty == true) {
       homeTimeouts = 0;
-      if (await sock.sceneItems.getVisible("${box.source.homeTimeoutsPrefix ?? ""}1").catchError((e) => false) == true) homeTimeouts++;
-      if (await sock.sceneItems.getVisible("${box.source.homeTimeoutsPrefix ?? ""}2").catchError((e) => false) == true) homeTimeouts++;
-      if (await sock.sceneItems.getVisible("${box.source.homeTimeoutsPrefix ?? ""}3").catchError((e) => false) == true) homeTimeouts++;
+      if (await sock.sceneItems.getVisible("${box.source.homeTimeoutsPrefix ?? ""}1", box.scene.homeTimeouts).catchError((e) => false) == true) homeTimeouts++;
+      if (await sock.sceneItems.getVisible("${box.source.homeTimeoutsPrefix ?? ""}2", box.scene.homeTimeouts).catchError((e) => false) == true) homeTimeouts++;
+      if (await sock.sceneItems.getVisible("${box.source.homeTimeoutsPrefix ?? ""}3", box.scene.homeTimeouts).catchError((e) => false) == true) homeTimeouts++;
     }
   } catch(e) {
-    if (kDebugMode) {
-      print(e);
-    }
+    gameStateLogger.error("Error while getting data", error: e);
     return;
   }
   GameState state = const GameState();
@@ -232,6 +231,7 @@ class HomeView extends ConsumerWidget {
                   title: "Away Timeouts",
                   timeouts: gameState.awayTimeouts,
                   setting: SourceSetting.awayTimeoutsPrefix,
+                  sceneSetting: SceneSetting.awayTimeouts,
                 )
                 else GestureDetector(
                   onTap: () {
@@ -251,6 +251,7 @@ class HomeView extends ConsumerWidget {
                   child: const TimeoutEditorCard(
                     title: "Away Timeouts",
                     setting: "",
+                    sceneSetting: "",
                     disabled: true
                   ),
                 ),
@@ -258,6 +259,7 @@ class HomeView extends ConsumerWidget {
                   title: "Home Timeouts",
                   timeouts: gameState.homeTimeouts,
                   setting: SourceSetting.homeTimeoutsPrefix,
+                  sceneSetting: SceneSetting.homeTimeouts,
                 )
                 else GestureDetector(
                   onTap: () {
@@ -277,11 +279,13 @@ class HomeView extends ConsumerWidget {
                   child: const TimeoutEditorCard(
                     title: "Home Timeouts",
                     setting: "",
+                    sceneSetting: "",
                     disabled: true
                   ),
                 )
               ],
             ),
+            if (box.source.awayTopText?.isEmpty == false || box.source.homeTopText?.isEmpty == false) const TopTextCard(),
             if (box.source.clock != null || box.source.quarter != null) const ClockEditorCard(),
             if (box.source.downs != null) const DownsAndDistanceEditorCard(),
           ],
