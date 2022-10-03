@@ -30,6 +30,7 @@ dependencies:
   loggy: ^2.0.1+1
   pinelogger: ^1.1.0
   pinelogger_flutter: ^1.0.0
+  slugify: ^2.0.0
 
 dev_dependencies:
   flutter_test:
