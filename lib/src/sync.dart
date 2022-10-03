@@ -21,7 +21,7 @@ Future<void> pullSettings(Box box, ObsWebSocket obs) async {
     settings = await obs.config.getPersistentData(
       realm: "OBS_WEBSOCKET_DATA_REALM_PROFILE",
       slotName: "OBS_SCORER_CLIENT_PRESET_${slugify(sceneCollection, delimiter: '_').toUpperCase()}"
-    );
+    ).then((value) => value["slotValue"]);
   } catch(e) {
     late final String profile;
     try {

@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:hive/hive.dart';
+import 'package:obs_scorer_client/main.dart';
 import 'package:obs_scorer_client/src/settings.dart';
+import 'package:obs_scorer_client/src/sync.dart';
+import 'package:obs_scorer_client/views/home.dart';
 import 'package:obs_scorer_client/views/logs.dart';
+import 'package:pinelogger_flutter/pinelogger_flutter.dart';
 
 import 'login.dart';
 
@@ -205,6 +210,63 @@ class _SettingsViewState extends State<SettingsView> {
             )
           ],
         ),
+        Consumer(
+          builder: (context, ref, _) {
+            return SettingsGroup(
+              title: "Settings Sync",
+              children: [
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    border: Border(bottom: BorderSide(color: Theme.of(context).dividerColor.withAlpha(20), width: 0.9))
+                  ),
+                  child: ListTile(
+                    title: Text("Push/Send settings to OBS", style: headerTextStyle(context)),
+                    subtitle: Text(
+                      "Saved in the current Profile, and limited to the current Scene Collection.",
+                      style: subtitleTextStyle(context)
+                    ),
+                    leading: const Icon(Icons.upload),
+                    onTap: () async {
+                      late final Future<void> future;
+                      future = pushSettings(ref.read(settingsProvider), ref.read(socketProvider).value!);
+                      await showDialog(
+                        context: context,
+                        builder: (context) => FutureProgressDialog(future, message: "Sending settings to OBS...", failureMessage: "Could not push settings to OBS."),
+                      );
+                      // ignore: use_build_context_synchronously
+                      if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Settings pushed to OBS.")));
+                    },
+                  ),
+                ),
+                ListTile(
+                  title: Text("Pull/Get settings from OBS", style: headerTextStyle(context)),
+                  subtitle: Text(
+                    "Saved in the current Profile, and limited to the current Scene Collection.\n"
+                    "This is done automatically when you log in, so unless you changed and pushed settings on another device, "
+                    "you shouldn't have to do this.",
+                    style: subtitleTextStyle(context)
+                  ),
+                  isThreeLine: true,
+                  leading: const Icon(Icons.download),
+                  onTap: () async {
+                    late final Future<void> future;
+                    future = pullSettings(ref.read(settingsProvider), ref.read(socketProvider).value!);
+                    await showDialog(
+                      context: context,
+                      builder: (context) => FutureProgressDialog(future, message: "Receiving settings from OBS...", failureMessage: "Could not pull settings from OBS."),
+                    );
+                    // ignore: use_build_context_synchronously
+                    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Settings pulled from OBS.")));
+                    ref.refresh(settingsProvider);
+                      // refresh everything that uses settings
+                      // (except the settings screen I guess)
+                  },
+                ),
+              ]
+            );
+          }
+        ),
+        Divider(thickness: 2, color: Theme.of(context).dividerColor.withAlpha(20)),
         SimpleSettingsTile(
           title: "Licenses",
           subtitle: 'View licenses for all used libraries',
@@ -218,7 +280,7 @@ class _SettingsViewState extends State<SettingsView> {
           child: const LogView(),
         ),
         ListTile(
-          title: const Text("Log out"),
+          title: Text("Log out", style: headerTextStyle(context)?.copyWith(color: Colors.red)),
           leading: const Icon(Icons.logout),
           iconColor: Colors.red,
           textColor: Colors.red,
@@ -247,6 +309,59 @@ class _SettingsViewState extends State<SettingsView> {
           },
         ),
       ],
+    );
+  }
+
+  TextStyle? headerTextStyle(BuildContext context) =>
+    Theme.of(context).textTheme.headline6?.copyWith(fontSize: 16.0);
+
+  TextStyle? subtitleTextStyle(BuildContext context) => Theme.of(context)
+    .textTheme
+    .subtitle2
+    ?.copyWith(fontSize: 13.0, fontWeight: FontWeight.normal);
+
+}
+
+class FutureProgressDialog extends StatelessWidget {
+  final Future<void> future;
+  final String message;
+  final String? failureMessage;
+
+  const FutureProgressDialog(this.future, {Key? key, required this.message, this.failureMessage}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final logger = context.logger;
+    return FutureBuilder(
+      future: future,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          logger.error(failureMessage ?? "Failed: $message", error: snapshot.error);
+          return AlertDialog(
+            title: Text(message),
+            content: Text(snapshot.error.toString()),
+            actions: [
+              TextButton(
+                child: const Text("OK"),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          );
+        }
+        if (snapshot.connectionState == ConnectionState.done) {
+          Navigator.pop(context);
+          return const SizedBox.shrink();
+        }
+        return AlertDialog(
+          content: Row(
+            children: [
+              const CircularProgressIndicator(value: null),
+              const SizedBox(width: 16),
+              Text(message),
+            ],
+          ),
+        );
+      },
     );
   }
 }
