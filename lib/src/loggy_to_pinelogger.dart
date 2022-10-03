@@ -7,9 +7,27 @@ class LoggyToPinelogger extends LoggyPrinter {
   @override
   void onLog(LogRecord record) {
     //pinelogger.name = record.loggerName;
+    late final Severity _priorityLevel;
+    switch (record.level) {
+      case LogLevel.debug:
+        _priorityLevel = Severity.debug;
+        break;
+      case LogLevel.info:
+        _priorityLevel = Severity.info;
+        break;
+      case LogLevel.warning:
+        _priorityLevel = Severity.warning;
+        break;
+      case LogLevel.error:
+        _priorityLevel = Severity.error;
+        break;
+      default:
+        Severity(record.level.priority, record.level.name);
+        break;
+    }
     parent.child(record.loggerName).log(
       record.message,
-      severity: Severity(record.level.priority, record.level.name),
+      severity: _priorityLevel,
       //extraData: record.extraData,
       error: record.error,
       stackTrace: record.stackTrace,

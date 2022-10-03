@@ -29,11 +29,14 @@ class _TopTextCardState extends ConsumerState<TopTextCard> {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              TextField(
-                controller: _controller,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Top Text',
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 480),
+                child: TextField(
+                  controller: _controller,
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Top Text',
+                  ),
                 ),
               ),
               Wrap(
@@ -120,4 +123,5 @@ class _TopTextCardState extends ConsumerState<TopTextCard> {
   }
 }
 
+// ignore: constant_identifier_names
 enum _AHN { AWAY, HOME, NEUTRAL }

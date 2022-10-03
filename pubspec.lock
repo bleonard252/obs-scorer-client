@@ -439,16 +439,16 @@ packages:
   pinelogger:
     dependency: "direct main"
     description:
-      path: "../pinelogger/pinelogger"
-      relative: true
-    source: path
-    version: "1.0.0"
+      name: pinelogger
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
   pinelogger_flutter:
     dependency: "direct main"
     description:
-      path: "../pinelogger/pinelogger_flutter"
-      relative: true
-    source: path
+      name: pinelogger_flutter
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "1.0.0"
   platform:
     dependency: transitive

@@ -28,14 +28,8 @@ dependencies:
   flutter_riverpod: ^1.0.3+1
   flutter_settings_screens: ^0.3.3-null-safety+2
   loggy: ^2.0.1+1
-  pinelogger: ^1.0.0
+  pinelogger: ^1.1.0
   pinelogger_flutter: ^1.0.0
-
-dependency_overrides:
-  pinelogger:
-    path: ../pinelogger/pinelogger
-  pinelogger_flutter:
-    path: ../pinelogger/pinelogger_flutter
 
 dev_dependencies:
   flutter_test:
