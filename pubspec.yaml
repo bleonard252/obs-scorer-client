@@ -2,7 +2,7 @@ name: obs_scorer_client
 description: Easily change custom scoreboards in OBS.
 publish_to: 'none'
 
-version: 2.0.0+1
+version: 2.1.0+2
 
 environment:
   sdk: '>=2.18.0-271.7.beta <3.0.0'
@@ -30,6 +30,7 @@ dependencies:
   loggy: ^2.0.1+1
   pinelogger: ^1.1.0
   pinelogger_flutter: ^1.0.0
+  slugify: ^2.0.0
 
 dev_dependencies:
   flutter_test:

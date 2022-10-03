@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hive/hive.dart';
 import 'package:obs_scorer_client/main.dart';
 import 'package:obs_scorer_client/src/settings.dart';
+import 'package:obs_scorer_client/src/sync.dart';
 import 'package:obs_scorer_client/views/home.dart';
 
 class LoginView extends ConsumerStatefulWidget {
@@ -54,9 +54,24 @@ class _LoginViewState extends ConsumerState<LoginView> {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          final value = ref.read(settingsProvider);
-                          value.connection.address = addressController.text;
-                          value.connection.password = passwordController.text;
+                          final box = ref.read(settingsProvider);
+                          box.connection.address = addressController.text;
+                          box.connection.password = passwordController.text;
+                          // Start the socket.
+                          ref.refresh(socketProvider);
+                          // This spaghetti code pulls the settings and then restarts the socket,
+                          // which forces everything to refresh.
+                          // Fortunately this is only done when pressing the "login" button.
+                          ref.read(socketProvider.future)
+                          .then((obs) => pullSettings(box, obs)
+                            .then<void>((_) {
+                              ref.read(socketProvider).value?.close();
+                              ref.refresh(socketProvider);
+                            })
+                            .catchError((e) => appLogger.child("Login")
+                              .error("Failed to pull settings", error: e)
+                            )
+                          );
                           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomeView()));
                         },
                         child: const Text("Login"),
