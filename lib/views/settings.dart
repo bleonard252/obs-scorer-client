@@ -279,34 +279,39 @@ class _SettingsViewState extends State<SettingsView> {
           leading: const Icon(Icons.code),
           child: const LogView(),
         ),
-        ListTile(
-          title: Text("Log out", style: headerTextStyle(context)?.copyWith(color: Colors.red)),
-          leading: const Icon(Icons.logout),
-          iconColor: Colors.red,
-          textColor: Colors.red,
-          onTap: () {
-            showDialog(context: context, builder: (context) => AlertDialog(
-              title: const Text("Are you sure you want to log out?"),
-              actions: [
-                TextButton(
-                  child: const Text("Cancel"),
-                  onPressed: () => Navigator.pop(context, false),
-                ),
-                TextButton(
-                  child: const Text("Log out"),
-                  onPressed: () {
-                    Navigator.pop(context, true);
-                  },
-                ),
-              ],
-            )).then((value) {
-              if (!value) return;
-              Hive.box("settings").delete(ConnectionSetting.address);
-              Hive.box("settings").delete(ConnectionSetting.password);
-              Navigator.of(context).popUntil((route) => route.isFirst);
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginView()));
-            });
-          },
+        Consumer(
+          builder: (context, ref, _) {
+            return ListTile(
+              title: Text("Log out", style: headerTextStyle(context)?.copyWith(color: Colors.red)),
+              leading: const Icon(Icons.logout),
+              iconColor: Colors.red,
+              textColor: Colors.red,
+              onTap: () {
+                showDialog(context: context, builder: (context) => AlertDialog(
+                  title: const Text("Are you sure you want to log out?"),
+                  content: const Text("Any unpushed settings will be lost."),
+                  actions: [
+                    TextButton(
+                      child: const Text("Cancel"),
+                      onPressed: () => Navigator.pop(context, false),
+                    ),
+                    TextButton(
+                      child: const Text("Log out"),
+                      onPressed: () {
+                        Navigator.pop(context, true);
+                      },
+                    ),
+                  ],
+                )).then((value) {
+                  if (!value) return;
+                  Hive.box("settings").clear();
+                  ref.read(socketProvider).value?.close();
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginView()));
+                });
+              },
+            );
+          }
         ),
       ],
     );
