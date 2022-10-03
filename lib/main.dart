@@ -26,7 +26,7 @@ void main() {
   // );
   appLogger.debug("Starting app");
   WidgetsFlutterBinding.ensureInitialized();
-  Hive.init(Directory(".config/obs_scorer_client/").absolute.path);
+  if (!kIsWeb) Hive.init(Directory(".config/obs_scorer_client/").absolute.path);
   unawaited(Future(() async {
     await Hive.openBox("settings");
     await Settings.init(cacheProvider: HiveSettingsCache("settings"));
