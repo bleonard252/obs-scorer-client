@@ -30,7 +30,7 @@ jobs:
       - name: Get dependencies
         run: flutter pub get && flutter pub upgrade
       - name: Build for Web
-        run: flutter build web --release
+        run: flutter build web --release --base-href='/obs-scorer-client/'
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
